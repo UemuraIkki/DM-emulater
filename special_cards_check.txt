@@ -1,0 +1,162 @@
+Name: 時空の禁断 レッドゾーンX | Type: 進化サイキック・クリーチャー | Race: ソニック・コマンド/侵略者/イニシャルズX
+Name: 時空の鼓動 ブラックX | Type: サイキック・クリーチャー | Race: 禁断ソニック・コマンド/イニシャルズX
+Name: 黒断の覚醒者 ドキンダムBLACK | Type: サイキック・クリーチャー | Race: 禁断ソニック・コマンド/イニシャルズX
+Name: 禁断の邪眼 ドキンダムR | Type: クリーチャー | Race: 禁断
+Name: Dの終断 ドルマゲドン・エリア | Type: D2フィールド | Race: 
+Name: 禁断 ～封印されしX～ | Type: 禁断の鼓動 | Race: 
+Name: 伝説の禁断 ドキンダムX | Type: 禁断クリーチャー | Race: 
+Name: 禁断の轟速 ブラックゾーン | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者
+Name: Forbidden Sunrise ～禁断の夜明け～ | Type: 禁断フィールド | Race: 
+Name: 禁断機関 VV-8 | Type: 禁断クリーチャー | Race: 
+Name: FORBIDDEN SUNRISE ～禁断の夜明け～ | Type: 禁断フィールド | Race: 
+Name: 禁断の轟速 ブラックゾーン | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者
+Name: 灰燼と天門の儀式 | Type: 呪文 | Race: 
+Name: 奈落の葬儀人デス・シュテロン | Type: クリーチャー | Race: デーモン・コマンド
+Name: 禁断英雄 モモキングダムX | Type: スター進化クリーチャー | Race: ジョーカーズ/禁断/レクスターズ
+Name: 禁断竜王 Vol-Val-8 | Type: クリーチャー | Race: ディスペクター/アーマード・ドラゴン/アース・ドラゴン/禁断
+Name: 奈落の葬儀人デス・シュテロン | Type: クリーチャー | Race: デーモン・コマンド
+Name: 龍頭星雲人 / 零誕祭 | Type: クリーチャー | Race: デーモン・コマンド/ゼロリスト
+Name: 龍頭星雲人 / 零誕祭 | Type: 呪文 | Race: 
+Name: 禁断竜王 Vol-Val-8 | Type: クリーチャー | Race: ディスペクター/アーマード・ドラゴン/アース・ドラゴン/禁断
+Name: 禁断の轟速 ブラックゾーン | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者
+Name: 禁断の轟速 ブラックゾーン | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者
+Name: 禁断の轟速 ブラックゾーン | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者
+Name: 龍頭星雲人 / 零誕祭 | Type: クリーチャー | Race: デーモン・コマンド/ゼロリスト
+Name: 龍頭星雲人 / 零誕祭 | Type: 呪文 | Race: 
+Name: 時空の禁断 レッドゾーンX | Type: 進化サイキック・クリーチャー | Race: ソニック・コマンド/侵略者/イニシャルズX
+Name: 禁断樹幹 WO-ZERO | Type: 禁断クリーチャー | Race: 禁断/フィオナ・ガーディアン
+Name: 禁断 ～封印されしX～ | Type: 禁断の鼓動 | Race: 
+Name: 伝説の禁断 ドキンダムX | Type: 禁断クリーチャー | Race: 
+Name: 灰燼と天門の儀式 | Type: 呪文 | Race: 
+Name: 禁断竜王 Vol-Val-8 | Type: クリーチャー | Race: ディスペクター/アーマード・ドラゴン/アース・ドラゴン/禁断
+Name: 禁断の轟速 ブラックゾーン | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者
+Name: 禁断の轟速 ブラックゾーン | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者
+Name: 禁断の轟速 ブラックゾーン | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者
+Name: Dの禁断 ドキンダムエリア | Type: D2フィールド | Race: 
+Name: 灰燼と天門の儀式 | Type: 呪文 | Race: 
+Name: 禁断竜王 Vol-Val-8 | Type: クリーチャー | Race: ディスペクター/アーマード・ドラゴン/アース・ドラゴン/禁断
+Name: 灰燼と天門の儀式 | Type: 呪文 | Race: 
+Name: 禁断竜王 Vol-Val-8 | Type: クリーチャー | Race: ディスペクター/アーマード・ドラゴン/アース・ドラゴン/禁断
+Name: 禁断竜秘伝エターナルプレミアムズ | Type: 呪文 | Race: 
+Name: 星雲の精霊キルスティン / 神秘の石柱 | Type: クリーチャー | Race: エンジェル・コマンド
+Name: 星雲の精霊キルスティン / 神秘の石柱 | Type: 呪文 | Race: 
+Name: 禁断のモモキングダム | Type: スター進化クリーチャー | Race: ジョーカーズ/禁断/レクスターズ
+Name: 滅亡の起源 零無 | Type: 零龍の儀 | Race: 
+Name: 零龍 | Type: 零龍クリーチャー | Race: マスター・ドラゴンZ
+Name: 手札の儀 | Type: 零龍星雲 | Race: 
+Name: 零龍 | Type: 零龍クリーチャー | Race: マスター・ドラゴンZ
+Name: 龍頭星雲人 / 零誕祭 | Type: クリーチャー | Race: デーモン・コマンド/ゼロリスト
+Name: 龍頭星雲人 / 零誕祭 | Type: 呪文 | Race: 
+Name: 復活の儀 | Type: 零龍星雲 | Race: 
+Name: 零龍 | Type: 零龍クリーチャー | Race: マスター・ドラゴンZ
+Name: 墓地の儀 | Type: 零龍星雲 | Race: 
+Name: 零龍 | Type: 零龍クリーチャー | Race: マスター・ドラゴンZ
+Name: 破壊の儀 | Type: 零龍星雲 | Race: 
+Name: 零龍 | Type: 零龍クリーチャー | Race: マスター・ドラゴンZ
+Name: 禁断V キザム | Type: クリーチャー | Race: ソニック・コマンド/イニシャルズ
+Name: FORBIDDEN STAR ～世界最後の日～ | Type: 最終禁断フィールド | Race: 
+Name: 終焉の禁断 ドルマゲドンX | Type: 最終禁断クリーチャー | Race: 
+Name: 時空の禁断 レッドゾーンX | Type: 進化サイキック・クリーチャー | Race: ソニック・コマンド/侵略者/イニシャルズX
+Name: 時空の鼓動 ブラックX | Type: サイキック・クリーチャー | Race: 禁断ソニック・コマンド/イニシャルズX
+Name: 黒断の覚醒者 ドキンダムBLACK | Type: サイキック・クリーチャー | Race: 禁断ソニック・コマンド/イニシャルズX
+Name: Dの終断 ドルマゲドン・エリア | Type: D2フィールド | Race: 
+Name: 灰燼と天門の儀式 | Type: 呪文 | Race: 
+Name: 禁時混成王 ドキンダンテXXII | Type: クリーチャー | Race: ディスペクター/エンジェル・コマンド・ドラゴン/禁断
+Name: 禁断竜王 Vol-Val-8 | Type: クリーチャー | Race: ディスペクター/アーマード・ドラゴン/アース・ドラゴン/禁断
+Name: 禁断英雄 モモキングダムX | Type: スター進化クリーチャー | Race: ジョーカーズ/禁断/レクスターズ
+Name: 禁断 ～解放せしX～ | Type: 禁断の鼓動 | Race: 
+Name: FORBIDDEN SUNRISE ～禁断の夜明け～ | Type: 禁断フィールド | Race: 
+Name: 夢幻なる零龍 | Type: クリーチャー | Race: ゼロ・ドラゴン
+Name: 天聖王儀 アルカディア・グローリー | Type: 呪文 | Race: ジョーカーズ
+Name: 禁断竜秘伝エターナルプレミアムズ | Type: 呪文 | Race: 
+Name: 禁断の遺跡 | Type: 呪文 | Race: 
+Name: 禁断英雄 モモキングダムX | Type: スター進化クリーチャー | Race: ジョーカーズ/禁断/レクスターズ
+Name: 禁断竜王 Vol-Val-8 | Type: クリーチャー | Race: ディスペクター/アーマード・ドラゴン/アース・ドラゴン/禁断
+Name: 禁断英雄 モモキングダムX | Type: スター進化クリーチャー | Race: ジョーカーズ/禁断/レクスターズ
+Name: 禁断竜王 Vol-Val-8 | Type: クリーチャー | Race: ディスペクター/アーマード・ドラゴン/アース・ドラゴン/禁断
+Name: 禁断の轟速 レッドゾーンX | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者/イニシャルズ
+Name: 禁断V キザム | Type: クリーチャー | Race: ソニック・コマンド/イニシャルズ
+Name: 禁時混成王 ドキンダンテXXII | Type: クリーチャー | Race: ディスペクター/エンジェル・コマンド・ドラゴン/禁断
+Name: 禁時混成王 ドキンダンテXXII | Type: クリーチャー | Race: ディスペクター/エンジェル・コマンド・ドラゴン/禁断
+Name: 禁断の轟速 レッドゾーンX | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者/イニシャルズ
+Name: Dの禁断 ドキンダムエリア | Type: D2フィールド | Race: 
+Name: 禁断機関 VV-8 | Type: 禁断クリーチャー | Race: 
+Name: 禁断 ～封印されしX～ | Type: 禁断の鼓動 | Race: 
+Name: 伝説の禁断 ドキンダムX | Type: 禁断クリーチャー | Race: 
+Name: 灰燼と天門の儀式 | Type: 呪文 | Race: 
+Name: 伝説の禁断 ドキンダムX GS | Type: クリーチャー | Race: 禁断
+Name: カキンギョ #紫陽花 #ご祝儀 #池 | Type: クリーチャー | Race: トリックス/チームウェイブ
+Name: 禁断V キザム | Type: クリーチャー | Race: ソニック・コマンド/イニシャルズ
+Name: 死儀妖精ベラドマイ | Type: クリーチャー | Race: スノーフェアリー/ファンキー・ナイトメア/不死樹王国
+Name: 禁断X ナーグル | Type: クリーチャー | Race: イニシャルズ
+Name: 禁断 ～封印されしX～ | Type: 禁断の鼓動 | Race: 
+Name: 伝説の禁断 ドキンダムX | Type: 禁断クリーチャー | Race: 
+Name: 滅亡の起源 零無 | Type: 零龍の儀 | Race: 
+Name: 零龍 | Type: 零龍クリーチャー | Race: マスター・ドラゴンZ
+Name: 手札の儀 | Type: 零龍星雲 | Race: 
+Name: 零龍 | Type: 零龍クリーチャー | Race: マスター・ドラゴンZ
+Name: 破壊の儀 | Type: 零龍星雲 | Race: 
+Name: 零龍 | Type: 零龍クリーチャー | Race: マスター・ドラゴンZ
+Name: 復活の儀 | Type: 零龍星雲 | Race: 
+Name: 零龍 | Type: 零龍クリーチャー | Race: マスター・ドラゴンZ
+Name: 墓地の儀 | Type: 零龍星雲 | Race: 
+Name: 零龍 | Type: 零龍クリーチャー | Race: マスター・ドラゴンZ
+Name: 禁断V キザム | Type: クリーチャー | Race: ソニック・コマンド/イニシャルズ
+Name: 禁断 ～封印されしX～ | Type: 禁断の鼓動 | Race: 
+Name: 伝説の禁断 ドキンダムX | Type: 禁断の鼓動 | Race: 
+Name: 禁断の轟速 レッドゾーンX | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者/イニシャルズ
+Name: 禁断機関 VV-8 | Type: 禁断クリーチャー | Race: 
+Name: 奈落の葬儀人デス・シュテロン | Type: クリーチャー | Race: デーモン・コマンド
+Name: ドルマゲドン・ビッグバン | Type: 呪文 | Race: 
+Name: 業火の禁断エリア | Type: D2フィールド | Race: 
+Name: 禁断 ー封印されしXー | Type: 禁断の鼓動 | Race: 
+Name: 伝説の禁断 ドキンダムX | Type: 禁断クリーチャー | Race: 
+Name: ドキンダム・アポカリプス | Type: 禁断クリーチャー | Race: 
+Name: FORBIDDEN STAR ～世界最後の日～ | Type: 最終禁断フィールド | Race: 
+Name: 終焉の禁断 ドルマゲドンX | Type: 最終禁断クリーチャー | Race: 
+Name: Forbidden ー禁断の星ー | Type: クリーチャー | Race: 
+Name: 禁断W エキゾースト | Type: クリーチャー | Race: イニシャルズ
+Name: 禁断C トビゲール | Type: クリーチャー | Race: イニシャルズ
+Name: 禁断機関 VV-8 | Type: 禁断クリーチャー | Race: 
+Name: 禁断の影 ードキンダム・ソウルー | Type: 禁断クリーチャー | Race: 
+Name: 禁断U トルーパ | Type: クリーチャー | Race: ヒューマノイド爆/侵略者/イニシャルズ
+Name: 禁断V フィーダス | Type: クリーチャー | Race: ソニック・コマンド/イニシャルズ
+Name: 禁断V デカルパ | Type: クリーチャー | Race: ソニック・コマンド/イニシャルズ
+Name: D2V2 禁断のギガトロン | Type: クリーチャー | Race: ソニック・コマンド/マスター・イニシャルズ
+Name: Dの禁断 ドキンダムエリア | Type: D2フィールド | Race: 
+Name: 禁断R タガイニ | Type: クリーチャー | Race: イニシャルズ
+Name: 禁断U ミテトル | Type: クリーチャー | Race: イニシャルズ
+Name: 禁断U サベージ | Type: クリーチャー | Race: イニシャルズ
+Name: 禁断C ステーロ | Type: クリーチャー | Race: イニシャルズ
+Name: 禁断の轟速 レッドゾーンX | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者/イニシャルズ
+Name: 禁断C トリグ | Type: クリーチャー | Race: ソニック・コマンド/侵略者/イニシャルズ
+Name: 禁断C タイフン | Type: クリーチャー | Race: ソニック・コマンド/侵略者/イニシャルズ
+Name: 禁断U トルーパ | Type: クリーチャー | Race: ヒューマノイド爆/侵略者/イニシャルズ
+Name: 禁断C マーモ | Type: クリーチャー | Race: ソニック・コマンド/侵略者/イニシャルズ
+Name: 禁断 ー封印されしXー | Type: 禁断の鼓動 | Race: 
+Name: 伝説の禁断 ドキンダムX | Type: 禁断クリーチャー | Race: 
+Name: 禁断 | Type: クリーチャー | Race: 
+Name: 爆流剣術 伝承の儀 | Type: 呪文 | Race: 
+Name: 爆流剣術 伝承の儀 | Type: 呪文 | Race: 
+Name: 自己暗示の儀式 | Type: 呪文 | Race: 
+Name: 奈落の葬儀人デス・シュテロン | Type: クリーチャー | Race: デーモン・コマンド
+Name: 星雲の精霊キルスティン | Type: クリーチャー | Race: エンジェル・コマンド
+Name: ドキンダムBLACK | Type: クリーチャー | Race: 禁断ソニック・コマンド/マスター・イニシャルズ
+Name: 禁断U サベージ | Type: クリーチャー | Race: イニシャルズ
+Name: 禁断X ナーグル | Type: クリーチャー | Race: イニシャルズ
+Name: D2-V禁断のボルトロン | Type: クリーチャー | Race: ソニック・コマンド/マスター・イニシャルズ
+Name: 禁断V モードス | Type: クリーチャー | Race: ソニック・コマンド/イニシャルズ
+Name: 禁断V キザム | Type: クリーチャー | Race: ソニック・コマンド/イニシャルズ
+Name: 業火の禁断エリア | Type: D2フィールド | Race: 
+Name: 禁断の轟速 ブラックゾーン | Type: 進化クリーチャー | Race: ソニック・コマンド/S級侵略者
+Name: 時空の禁断 レッドゾーンX | Type: 進化サイキック・クリーチャー | Race: ソニック・コマンド/侵略者/イニシャルズX
+Name: FORBIDDEN SUNRISE ～禁断の夜明け～ | Type: 禁断フィールド | Race: 
+Name: 灰燼と天門の儀式 | Type: 呪文 | Race: 
+Name: 禁断のモモキングダム | Type: スター進化クリーチャー | Race: ジョーカーズ/禁断/レクスターズ
+Name: 禁断の月 ドキンダムーン | Type: D2フィールド | Race: 
+Name: 禁断 V キザム | Type: クリーチャー | Race: ソニックコマンド/イニシャルズ
+Name: 禁断 | Type: クリーチャー | Race: 
+Name: 禁断 ー目醒めの刻ー | Type: 禁断の鼓動 | Race: 
+Name: 禁断のドキンダム | Type: 禁断クリーチャー | Race: 
+Name: 禁断U トルーパ | Type: クリーチャー | Race: ヒューマノイド爆/侵略者/イニシャルズ
+Name: 禁断C マーモ | Type: クリーチャー | Race: ソニック・コマンド/侵略者/イニシャルズ
