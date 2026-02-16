@@ -11,7 +11,7 @@ try:
         name = card.get('name', '')
         type_ = card.get('type', '')
         race = card.get('race', '')
-        
+        #open
         # Check if any keyword matches
         if any(k in name for k in TARGET_KEYWORDS) or \
            any(k in type_ for k in TARGET_KEYWORDS) or \
