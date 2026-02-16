@@ -23,10 +23,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
                     {/* Navigation */}
                     <nav className="flex items-center gap-1 md:gap-4">
-                        <NavLink to="/" active={isActive('/')}>Home</NavLink>
-                        <NavLink to="/deck-builder" active={isActive('/deck-builder')}>Deck Builder</NavLink>
-                        <NavLink to="/battle" active={isActive('/battle')}>Battle</NavLink>
-                        <NavLink to="/history" active={isActive('/history')}>History</NavLink>
+                        <NavLink to="/" active={isActive('/')}>ホーム</NavLink>
+                        <NavLink to="/deck-builder" active={isActive('/deck-builder')}>デッキ構築</NavLink>
+                        <NavLink to="/battle" active={isActive('/battle')}>対戦ルーム</NavLink>
+                        <NavLink to="/history" active={isActive('/history')}>履歴</NavLink>
                     </nav>
                 </div>
             </header>
@@ -43,8 +43,8 @@ const NavLink: React.FC<{ to: string; active: boolean; children: React.ReactNode
     <Link
         to={to}
         className={`px-3 py-2 rounded text-sm font-medium transition-colors ${active
-                ? 'bg-slate-800 text-white'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800'
+            ? 'bg-slate-800 text-white'
+            : 'text-slate-300 hover:text-white hover:bg-slate-800'
             }`}
     >
         {children}

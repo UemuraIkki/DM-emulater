@@ -63,16 +63,16 @@ export const DeckList: React.FC<DeckListProps> = ({ title, cards, max, zone, onR
                         onChange={(e) => setSortMode(e.target.value as SortOption)}
                         className="text-[10px] p-1 rounded border border-gray-300 bg-white"
                     >
-                        <option value="default">Default</option>
-                        <option value="cost_asc">Cost ▲</option>
-                        <option value="cost_desc">Cost ▼</option>
-                        <option value="count_desc">Count</option>
+                        <option value="default">デフォルト</option>
+                        <option value="cost_asc">コスト ▲</option>
+                        <option value="cost_desc">コスト ▼</option>
+                        <option value="count_desc">枚数</option>
                     </select>
                 </div>
             </div>
 
             {cards.length === 0 ? (
-                <p className="text-xs text-gray-400 text-center italic py-2">Empty</p>
+                <p className="text-xs text-gray-400 text-center italic py-2">カードがありません</p>
             ) : (
                 <div className="space-y-1">
                     {processedCards.map(({ card, index }, i) => (

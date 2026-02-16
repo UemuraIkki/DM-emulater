@@ -9,14 +9,14 @@ const Home = () => {
                     Duel Masters <span className="text-blue-400">Vault Clone</span>
                 </h1>
                 <p className="text-xl md:text-2xl text-slate-300 max-w-2xl mx-auto mb-10">
-                    Build the ultimate deck, analyze the meta, and battle online.
-                    The classic TCG experience, reimagined for the web.
+                    最強のデッキを構築し、メタを分析し、オンラインで対戦しよう。
+                    ウェブで生まれ変わったクラシックなTCG体験。
                 </p>
                 <Link
                     to="/deck-builder"
                     className="inline-block bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105"
                 >
-                    Start Building
+                    デッキ作成を始める
                 </Link>
             </section>
 
@@ -28,9 +28,9 @@ const Home = () => {
                     <Link to="/deck-builder" className="group">
                         <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 hover:border-blue-500 transition-colors h-full flex flex-col shadow-xl">
                             <div className="text-4xl mb-4">🃏</div>
-                            <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition-colors">Deck Builder</h2>
+                            <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-400 transition-colors">デッキ構築</h2>
                             <p className="text-slate-400 flex-1">
-                                Advanced search, intuitive drag-and-drop (coming soon), and comprehensive deck management tools.
+                                高度な検索、直感的な操作、そして充実したデッキ管理ツール。
                             </p>
                         </div>
                     </Link>
@@ -39,9 +39,9 @@ const Home = () => {
                     <Link to="/battle" className="group">
                         <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 hover:border-red-500 transition-colors h-full flex flex-col shadow-xl">
                             <div className="text-4xl mb-4">⚔️</div>
-                            <h2 className="text-2xl font-bold mb-2 group-hover:text-red-400 transition-colors">Battle Room</h2>
+                            <h2 className="text-2xl font-bold mb-2 group-hover:text-red-400 transition-colors">対戦ルーム</h2>
                             <p className="text-slate-400 flex-1">
-                                Connect with players worldwide. Test your decks in real-time online battles.
+                                世界中のプレイヤーと接続。リアルタイムのオンライン対戦でデッキを試そう。
                             </p>
                         </div>
                     </Link>
@@ -50,9 +50,9 @@ const Home = () => {
                     <Link to="/history" className="group">
                         <div className="bg-slate-800 rounded-xl p-8 border border-slate-700 hover:border-green-500 transition-colors h-full flex flex-col shadow-xl">
                             <div className="text-4xl mb-4">📜</div>
-                            <h2 className="text-2xl font-bold mb-2 group-hover:text-green-400 transition-colors">Battle History</h2>
+                            <h2 className="text-2xl font-bold mb-2 group-hover:text-green-400 transition-colors">対戦履歴</h2>
                             <p className="text-slate-400 flex-1">
-                                Review your past matches, analyze win rates, and refine your strategies.
+                                過去の試合を振り返り、勝率を分析し、戦略を練り直そう。
                             </p>
                         </div>
                     </Link>

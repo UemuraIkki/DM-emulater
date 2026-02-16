@@ -8,18 +8,18 @@ interface FilterPanelProps {
 }
 
 const CIV_OPTIONS = [
-    { label: 'Light', value: '光', color: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
-    { label: 'Water', value: '水', color: 'bg-blue-100 text-blue-800 border-blue-300' },
-    { label: 'Dark', value: '闇', color: 'bg-gray-800 text-gray-100 border-gray-600' },
-    { label: 'Fire', value: '火', color: 'bg-red-100 text-red-800 border-red-300' },
-    { label: 'Nature', value: '自然', color: 'bg-green-100 text-green-800 border-green-300' },
-    { label: 'Zero', value: 'ゼロ', color: 'bg-gray-100 text-gray-800 border-gray-300' },
+    { label: '光', value: '光', color: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
+    { label: '水', value: '水', color: 'bg-blue-100 text-blue-800 border-blue-300' },
+    { label: '闇', value: '闇', color: 'bg-gray-800 text-gray-100 border-gray-600' },
+    { label: '火', value: '火', color: 'bg-red-100 text-red-800 border-red-300' },
+    { label: '自然', value: '自然', color: 'bg-green-100 text-green-800 border-green-300' },
+    { label: 'ゼロ', value: 'ゼロ', color: 'bg-gray-100 text-gray-800 border-gray-300' },
 ];
 
 const TYPE_OPTIONS = [
-    'Creature', 'Spell', 'Twinpact', 'Evolution Creature',
-    'NEO Creature', 'Tamaseed', 'Cross Gear', 'Castle', 'Field',
-    'Rule Plus', 'Game Start'
+    'クリーチャー', '呪文', 'ツインパクト', '進化クリーチャー',
+    'NEOクリーチャー', 'タマシード', 'クロスギア', '城', 'フィールド',
+    'ルール・プラス', 'ゲーム開始時'
 ];
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onChange, className = '' }) => {
@@ -67,24 +67,24 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onChange, cla
     return (
         <div className={`bg-white p-4 rounded shadow-sm border border-gray-200 ${className}`}>
             <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-gray-700">Detailed Filter</h3>
+                <h3 className="font-bold text-gray-700">詳細フィルター</h3>
                 <button onClick={resetFilters} className="text-xs text-blue-500 hover:underline">
-                    Reset All
+                    リセット
                 </button>
             </div>
 
             {/* --- Civilization --- */}
             <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
-                    <label className="block text-xs font-semibold text-gray-500">Civilization</label>
+                    <label className="block text-xs font-semibold text-gray-500">文明</label>
                     <div className="flex bg-gray-100 rounded p-0.5">
                         {(['include', 'exact', 'exclude'] as CivMode[]).map(mode => (
                             <button
                                 key={mode}
                                 onClick={() => setCivMode(mode)}
                                 className={`px-2 py-0.5 text-[10px] rounded capitalize ${filters.civMode === mode
-                                        ? 'bg-white shadow text-blue-600 font-bold'
-                                        : 'text-gray-400 hover:text-gray-600'
+                                    ? 'bg-white shadow text-blue-600 font-bold'
+                                    : 'text-gray-400 hover:text-gray-600'
                                     }`}
                             >
                                 {mode}
@@ -98,8 +98,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onChange, cla
                             key={civ.value}
                             onClick={() => toggleCiv(civ.value)}
                             className={`px-2 py-1 text-xs rounded border transition-opacity ${filters.civilizations.includes(civ.value)
-                                    ? `ring-2 ring-offset-1 ring-blue-400 font-bold opacity-100 ${civ.color}`
-                                    : 'bg-gray-50 text-gray-500 border-gray-200 opacity-60 hover:opacity-100'
+                                ? `ring-2 ring-offset-1 ring-blue-400 font-bold opacity-100 ${civ.color}`
+                                : 'bg-gray-50 text-gray-500 border-gray-200 opacity-60 hover:opacity-100'
                                 }`}
                         >
                             {civ.label}
@@ -110,15 +110,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onChange, cla
 
             {/* --- Card Types --- */}
             <div className="mb-4">
-                <label className="block text-xs font-semibold text-gray-500 mb-2">Card Type</label>
+                <label className="block text-xs font-semibold text-gray-500 mb-2">カードタイプ</label>
                 <div className="flex flex-wrap gap-1.5">
                     {TYPE_OPTIONS.map((type) => (
                         <button
                             key={type}
                             onClick={() => toggleType(type)}
                             className={`px-2 py-1 text-[10px] rounded border ${filters.cardTypes.includes(type)
-                                    ? 'bg-blue-100 text-blue-800 border-blue-300 font-bold'
-                                    : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
+                                ? 'bg-blue-100 text-blue-800 border-blue-300 font-bold'
+                                : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
                                 }`}
                         >
                             {type}
@@ -131,7 +131,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onChange, cla
             <div className="grid grid-cols-2 gap-4 mb-2">
                 {/* Cost */}
                 <div>
-                    <label className="block text-xs font-semibold text-gray-500 mb-1">Cost</label>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1">コスト</label>
                     <div className="flex items-center gap-1">
                         <input
                             type="number"
@@ -153,7 +153,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onChange, cla
 
                 {/* Power */}
                 <div>
-                    <label className="block text-xs font-semibold text-gray-500 mb-1">Power</label>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1">パワー</label>
                     <div className="flex items-center gap-1">
                         <input
                             type="number"
