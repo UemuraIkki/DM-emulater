@@ -1,12 +1,28 @@
 import { useEffect, useState } from 'react';
 import { loadDecks, deleteDeck } from '../utils/deckStorage';
 import type { Deck } from '../utils/deckStorage';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function DeckList() {
     const [decks, setDecks] = useState<Deck[]>([]);
     const [loading, setLoading] = useState(true);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state && location.state.successMessage) {
+            setToastMessage(location.state.successMessage);
+            // Clear state so it doesn't reappear on reload (handled by history replacement usually, but good practice to rely on transient state)
+            window.history.replaceState({}, document.title);
+
+            // Auto dismiss
+            const timer = setTimeout(() => {
+                setToastMessage(null);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [location]);
 
     const fetchDecks = async () => {
         setLoading(true);
@@ -43,7 +59,20 @@ export default function DeckList() {
     };
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
+        <div className="p-8 max-w-7xl mx-auto relative">
+            {/* Toast Notification */}
+            {toastMessage && (
+                <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 flex items-center gap-4 animate-fade-in-down">
+                    <span>{toastMessage}</span>
+                    <button
+                        onClick={() => setToastMessage(null)}
+                        className="font-bold hover:text-green-200"
+                    >
+                        ×
+                    </button>
+                </div>
+            )}
+
             <h1 className="text-3xl font-bold mb-6 text-slate-800">保存されたデッキ</h1>
 
             {loading ? (

@@ -12,12 +12,20 @@ const Home = () => {
                     最強のデッキを構築し、メタを分析し、オンラインで対戦しよう。
                     ウェブで生まれ変わったクラシックなTCG体験。
                 </p>
-                <Link
-                    to="/deck-builder"
-                    className="inline-block bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105"
-                >
-                    デッキ作成を始める
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <Link
+                        to="/deck-builder"
+                        className="inline-block bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105"
+                    >
+                        デッキ作成を始める
+                    </Link>
+                    <Link
+                        to="/decks"
+                        className="inline-block bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 border border-slate-600"
+                    >
+                        作成済みデッキ一覧
+                    </Link>
+                </div>
             </section>
 
             {/* Features Grid */}

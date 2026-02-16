@@ -106,7 +106,8 @@ function DeckBuilder() {
 
             if (savedDeck) {
                 setDeckId(savedDeck.id);
-                alert("保存しました！");
+                // Redirect to list with success message
+                navigate('/decks', { state: { successMessage: `デッキ「${deckName}」を保存しました` } });
             }
         } catch (err) {
             console.error(err);
