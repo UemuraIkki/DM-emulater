@@ -1,5 +1,6 @@
-import { GameState, ZoneId, CardState, PlayerId } from '../../types/gameState';
-import { UnifiedCard } from '../../utils/cardProcessor';
+import { ZoneId } from '../../types/gameState';
+import type { GameState, CardState, PlayerId } from '../../types/gameState';
+import type { UnifiedCard } from '../../types/card-master';
 
 interface GameBoardProps {
     gameState: GameState;

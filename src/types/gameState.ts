@@ -56,7 +56,14 @@ export interface CardState {
     stackOrder?: number;
 
     // Battle Zone Specific
-    summoningSickness: boolean;
+    // 301.5 Summoning Sickness
+    hasSummoningSickness: boolean;
+
+    // 303 / 305 / 310 Attachment Logic
+    attachedToId?: CardId;
+
+    // 306.3 / 308.3 / 310.3 Orientation
+    isDefaultHorizontal: boolean;
 }
 
 /**

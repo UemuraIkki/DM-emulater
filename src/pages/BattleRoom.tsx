@@ -3,10 +3,11 @@ import { DeckSelector } from '../components/game/DeckSelector';
 import { GameBoard } from '../components/game/GameBoard';
 import { initializeGame } from '../logic/gameInit';
 import { gameReducer } from '../logic/gameReducer';
-import { normalizeCards, UnifiedCard } from '../utils/cardProcessor';
-import { CardData } from '../types';
-import { Deck } from '../utils/deckStorage';
-import { GameState } from '../types/gameState';
+import { normalizeCards } from '../utils/cardProcessor';
+import type { UnifiedCard } from '../types/card-master';
+import type { CardData } from '../types';
+import type { Deck } from '../utils/deckStorage';
+import type { GameState } from '../types/gameState';
 
 const BattleRoom = () => {
     const [gameStarted, setGameStarted] = useState(false);

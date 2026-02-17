@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { UnifiedCard } from './cardProcessor';
+import type { UnifiedCard } from '../types/card-master';
 
 export interface Deck {
     id: string;

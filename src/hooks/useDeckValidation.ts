@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { Zone } from '../types';
-import type { UnifiedCard } from '../utils/cardProcessor';
+import type { UnifiedCard } from '../types/card-master';
 
 interface DeckValidationResult {
     valid: boolean;
@@ -12,14 +12,16 @@ interface DeckValidationResult {
     externalCount: number;
 }
 
+import { SpecialType } from '../types/card-master';
+
 export const getZone = (card: UnifiedCard): Zone | 'external' => {
-    if (card.cardType === 'Psychic' || card.cardType === 'Dragheart') {
+    if (card.cardType === SpecialType.PSYCHIC || card.cardType === SpecialType.DRAGHEART) {
         return 'hyperSpatial';
     }
-    if (card.cardType === 'GR') {
+    if (card.cardType === SpecialType.GR) {
         return 'gr';
     }
-    if (card.cardType === 'ZeroryuPart' || card.cardType === 'DolmadgeddonPart') {
+    if (card.cardType === SpecialType.ZERORYU_PART || card.cardType === SpecialType.DOLMADGEDDON_PART) {
         return 'external'; // New zone in App logic
     }
     return 'main';
@@ -70,8 +72,8 @@ export const useDeckValidation = (
         }
 
         // 2. Check External Cards (Zeroryu / Dolmadgeddon)
-        const zeroryuParts = external.filter(c => c.cardType === 'ZeroryuPart');
-        const dolmadgeddonParts = external.filter(c => c.cardType === 'DolmadgeddonPart');
+        const zeroryuParts = external.filter(c => c.cardType === SpecialType.ZERORYU_PART);
+        const dolmadgeddonParts = external.filter(c => c.cardType === SpecialType.DOLMADGEDDON_PART);
 
         // Rule: Can only use ONE of: Dokindam OR Zeroryu OR Dolmadgeddon
         // If Dokindam is present...

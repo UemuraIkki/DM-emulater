@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { loadDecks, Deck } from '../../utils/deckStorage';
+import { loadDecks } from '../../utils/deckStorage';
+import type { Deck } from '../../utils/deckStorage';
 
 interface DeckSelectorProps {
     onSelect: (deck: Deck) => void;

@@ -1,39 +1,8 @@
-import type { CardData } from '../types';
+import type { CardData } from '../types/card-master';
+import type { UnifiedCard } from '../types/card-master';
+import { CardType, SpecialType } from '../types/card-master';
 
-export interface UnifiedCard {
-    id: string; // Base ID (e.g., "dm23rp2x-071")
-    name: string;
-    cardType: 'Normal' | 'Twinpact' | 'Psychic' | 'Dragheart' | 'GR' | 'Evolution' | 'ZeroryuPart' | 'DolmadgeddonPart';
-
-    /** 
-     * Special flag for cards that are part of the Main Deck count (40) 
-     * but begin the game in the Battle Zone (e.g., Dokindam X "Forbidden Pulse").
-     */
-    startsInBattleZone?: boolean;
-
-    mainPart: CardData;
-    subPart?: CardData;
-
-    // Search Index
-    searchIndex: {
-        civilizations: string[];
-        costs: number[];
-        races: string[];
-        power: number[];
-        text: string;
-        // Type Flags for Advanced Filtering
-        isSpell?: boolean;
-        isEvolution?: boolean;
-        isNEO?: boolean;
-        isPsychic?: boolean;
-        isDragheart?: boolean;
-        isCreature?: boolean;
-        isField?: boolean; // D2, Forbidden Field, etc.
-        isCastle?: boolean;
-        isCrossGear?: boolean;
-        isTamaseed?: boolean;
-    };
-}
+export type { UnifiedCard };
 
 const parseCost = (costStr: string): number => {
     const num = parseInt(costStr, 10);
@@ -97,33 +66,31 @@ export const normalizeCards = (rawData: CardData[]): UnifiedCard[] => {
 
         // 1. External Game Start Cards (Zeroryu / Dolmadgeddon) 
         if (mainType.includes('零龍の儀') || mainType.includes('零龍星雲')) {
-            cardType = 'ZeroryuPart';
+            cardType = SpecialType.ZERORYU_PART;
         } else if (mainType.includes('最終禁断フィールド')) {
-            cardType = 'DolmadgeddonPart';
+            cardType = SpecialType.DOLMADGEDDON_PART;
         }
         // 2. Main Deck Game Start Cards (Dokindam X types)
         else if (mainType.includes('禁断の鼓動')) {
-            cardType = 'Normal';
             startsInBattleZone = true;
         }
         // 3. Special Zones
         else if (combinedType.includes('サイキック')) {
-            cardType = 'Psychic';
+            cardType = SpecialType.PSYCHIC;
         }
         else if (combinedType.includes('ドラグハート')) {
-            cardType = 'Dragheart';
+            cardType = SpecialType.DRAGHEART;
         }
         else if (mainType.includes('GR')) {
-            cardType = 'GR';
+            cardType = SpecialType.GR;
         }
         // 4. Twinpact
         else if (sub && main.name === sub.name) {
-            cardType = 'Twinpact';
+            cardType = SpecialType.TWINPACT;
         }
-        // 5. Evolution (as a top-level category if desired, usually considered 'Normal' deck type but special)
-        // We already have 'Evolution' in type definition, let's use it if strict.
+        // 5. Evolution
         else if (mainType.includes('進化')) {
-            cardType = 'Evolution';
+            cardType = SpecialType.EVOLUTION;
         }
 
         // Build Search Index
@@ -150,10 +117,9 @@ export const normalizeCards = (rawData: CardData[]): UnifiedCard[] => {
         if (sub) processPart(sub);
 
         // Detailed Flags for Filtering
-        // Note: includes() is case sensitive for Japanese.
         const isSpell = combinedType.includes('呪文');
         const isEvolution = combinedType.includes('進化');
-        const isNEO = combinedType.toUpperCase().includes('NEO') || combinedType.includes('ＮＥＯ'); // Handle full-width?
+        const isNEO = combinedType.toUpperCase().includes('NEO') || combinedType.includes('ＮＥＯ');
         const isPsychic = combinedType.includes('サイキック');
         const isDragheart = combinedType.includes('ドラグハート');
         const isCreature = combinedType.includes('クリーチャー');
@@ -162,11 +128,25 @@ export const normalizeCards = (rawData: CardData[]): UnifiedCard[] => {
         const isCrossGear = combinedType.includes('クロスギア');
         const isTamaseed = combinedType.includes('タマシード');
 
+        // Map to strict CardType list
+        const typesList: CardType[] = [];
+        if (isCreature) typesList.push(CardType.CREATURE);
+        if (isSpell) typesList.push(CardType.SPELL);
+        if (isCrossGear) typesList.push(CardType.CROSS_GEAR);
+        if (isCastle) typesList.push(CardType.CASTLE);
+        if (isField) typesList.push(CardType.FIELD);
+        if (isTamaseed) typesList.push(CardType.TAMASEED);
+
+        // Handle specialized types based on specific keywords if needed
+        if (combinedType.includes('オーラ')) typesList.push(CardType.AURA);
+        if (combinedType.includes('儀')) typesList.push(CardType.GI);
+
         unifiedCards.push({
             id: baseId,
             name: main.name,
             cardType,
             startsInBattleZone,
+            sides: [], // Placeholder for Rule 201 implementation
             mainPart: main,
             subPart: sub,
             searchIndex: {
@@ -185,7 +165,8 @@ export const normalizeCards = (rawData: CardData[]): UnifiedCard[] => {
                 isField,
                 isCastle,
                 isCrossGear,
-                isTamaseed
+                isTamaseed,
+                isCardType: typesList
             }
         });
     });

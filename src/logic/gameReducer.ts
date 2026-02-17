@@ -1,4 +1,4 @@
-import { GameState } from '../types/gameState';
+import type { GameState } from '../types/gameState';
 
 export type GameAction =
     | { type: 'INITIALIZE_GAME'; payload: GameState };

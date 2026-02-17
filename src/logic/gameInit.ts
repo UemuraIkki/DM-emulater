@@ -1,13 +1,9 @@
-import { v4 as uuidv4 } from 'uuid'; // Standard UUID if available, or custom
-import {
-    GameState,
-    PlayerId,
-    ZoneId,
-    CardState,
-    PlayerState
-} from '../types/gameState';
-import { Deck } from '../utils/deckStorage';
-import { UnifiedCard } from '../utils/cardProcessor';
+
+import { ZoneId } from '../types/gameState';
+import type { GameState, PlayerId, CardState, PlayerState } from '../types/gameState';
+import type { Deck } from '../utils/deckStorage';
+import type { UnifiedCard } from '../types/card-master';
+import { SpecialType, CardType } from '../types/card-master';
 import { getZone } from '../hooks/useDeckValidation'; // Helper to determine zone
 
 // Simple UUID generator if uuid package not available (likely valid for this env)
@@ -31,6 +27,15 @@ const createCardState = (
     tapped: boolean = false,
     faceDown: boolean = false
 ): CardState => {
+    // Logic for Default Orientation (Rule 306.3, 310.3, etc.)
+    let isDefaultHorizontal = false;
+    if (masterCard.sides && masterCard.sides.length > 0) {
+        const type = masterCard.sides[0].type;
+        if (type === CardType.FIELD || type === CardType.AURA || type === CardType.FORTRESS) {
+            isDefaultHorizontal = true;
+        }
+    }
+
     return {
         id: generateId(),
         masterId: masterCard.id, // ID from UnifiedCard
@@ -39,9 +44,17 @@ const createCardState = (
         zone,
         tapped,
         faceDown,
-        summoningSickness: true, // Creatures have summoning sickness by default
+        // 301.5 Summoning Sickness
+        hasSummoningSickness: true,
+
+        // 303 / 305 / 310 Attachment Logic
+        attachedToId: undefined,
+
+        // 306.3 / 308.3 / 310.3 Orientation
+        isDefaultHorizontal,
     };
 };
+
 
 export const initializeGame = (
     userDeck: Deck,
@@ -75,7 +88,7 @@ export const initializeGame = (
         // Let's rely on cardType checks from previous task if getZone is insufficient, 
         // but current getZone logic handles 'external'.
 
-        if (card.cardType === 'ZeroryuPart' || card.cardType === 'DolmadgeddonPart') {
+        if (card.cardType === SpecialType.ZERORYU_PART || card.cardType === SpecialType.DOLMADGEDDON_PART) {
             externalCards.push(card);
         } else if (zoneType === 'hyperSpatial') {
             hyperSpatialCards.push(card);
@@ -133,7 +146,7 @@ export const initializeGame = (
     gameStartBattleCards.forEach(c => {
         const cs = createCardState(c, userPlayerId, ZoneId.BATTLE_ZONE, false, false);
         // Dokindam is usually tapped or has special state, but simple for now
-        cs.summoningSickness = false; // Usually game start cards ignore this or handle differently
+        cs.hasSummoningSickness = false; // Usually game start cards ignore this or handle differently
         userCards.push(cs);
     });
 
