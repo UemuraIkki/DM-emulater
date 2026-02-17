@@ -53,6 +53,15 @@ const createCardState = (
 
         // 306.3 / 308.3 / 310.3 Orientation
         isDefaultHorizontal,
+
+        // 816. Hyper Mode
+        isHyperMode: false,
+
+        // 805. Psychic / 807. Dragheart / 809. Forbidden
+        isFlipped: false,
+
+        // 804. God Link / 812. Zeroryu
+        linkedCardIds: []
     };
 };
 
@@ -188,9 +197,18 @@ export const initializeGame = (
         currentAttack: undefined
     };
 
+    // Create Master Map
+    const cardsMap: Record<string, UnifiedCard> = {};
+    userDeck.cards.forEach(c => {
+        cardsMap[c.id] = c;
+    });
+
     return {
         players,
         cards,
-        turnState
+        cardsMap,
+        turnState,
+        pendingEffects: [],
+        continuousEffects: []
     };
 };

@@ -18,7 +18,13 @@ export const moveCard = (
     targetOwnerId?: string // If control changes or just moving to own zone
 ): GameState => {
     // Clone state for immutability
-    const newState: GameState = JSON.parse(JSON.stringify(state));
+    // Clone state with spread (Preserves functions in effects, though cards doesn't usually have them)
+    // Deep copy of 'cards' is needed to interact safely.
+    // We assume 'pendingEffects' and 'continuousEffects' and 'cardsMap' are not modified by moveCard directly here (except possibly triggered effects? No, triggers handled outside).
+    const newState: GameState = {
+        ...state,
+        cards: { ...state.cards } // Shallow copy of cards map is enough if we replace the card object itself
+    };
     const card = newState.cards[cardId];
 
     if (!card) {

@@ -7,7 +7,10 @@ import { moveCard } from './zoneMovement';
  */
 export const startTurn = (state: GameState): GameState => {
     const activePlayerId = state.turnState.activePlayerId;
-    const newState = JSON.parse(JSON.stringify(state)) as GameState;
+    const newState: GameState = {
+        ...state,
+        cards: { ...state.cards }
+    };
 
     // 501.1 Untap Step
     // Untap all cards in Battle Zone and Mana Zone controlled by the active player.

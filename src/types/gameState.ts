@@ -4,25 +4,27 @@ export type PlayerId = string;
 /**
  * Rule 400.1 + System Zones
  */
-export enum ZoneId {
+export const ZoneId = {
     // Player Specific (Rule 410)
-    DECK = 'DECK',
-    HAND = 'HAND',
-    GRAVEYARD = 'GRAVEYARD',
-    MANA = 'MANA',
-    SHIELD = 'SHIELD',
-    HYPER_SPATIAL = 'HYPER_SPATIAL',
-    GR = 'GR',
+    DECK: 'DECK',
+    HAND: 'HAND',
+    GRAVEYARD: 'GRAVEYARD',
+    MANA: 'MANA',
+    SHIELD: 'SHIELD',
+    HYPER_SPATIAL: 'HYPER_SPATIAL',
+    GR: 'GR',
 
     // Shared (Rule 403)
-    BATTLE_ZONE = 'BATTLE_ZONE',
+    BATTLE_ZONE: 'BATTLE_ZONE',
 
     // System
-    PENDING = 'PENDING', // Rule 409 - Resolution waiting state
-    EXTERNAL = 'EXTERNAL', // Rule 100.5 - For Zeroryu etc.
-    EXILE = 'EXILE', // Removed from game
-    ABYSS = 'ABYSS' // Rule 410.4 - Deep Abyss
-}
+    PENDING: 'PENDING', // Rule 409 - Resolution waiting state
+    EXTERNAL: 'EXTERNAL', // Rule 100.5 - For Zeroryu etc.
+    EXILE: 'EXILE', // Removed from game
+    ABYSS: 'ABYSS' // Rule 410.4 - Deep Abyss
+} as const;
+
+export type ZoneId = typeof ZoneId[keyof typeof ZoneId];
 
 /**
  * Represents the dynamic state of a card instance in the game.
@@ -64,7 +66,17 @@ export interface CardState {
     attachedToId?: CardId;
 
     // 306.3 / 308.3 / 310.3 Orientation
+    // 306.3 / 308.3 / 310.3 Orientation
     isDefaultHorizontal: boolean;
+
+    // 816. Hyper Mode
+    isHyperMode: boolean; // ハイパーモード解放中か
+
+    // 805. Psychic / 807. Dragheart / 809. Forbidden
+    isFlipped: boolean; // 裏面（覚醒/龍解/禁断解放）になっているか
+
+    // 804. God Link / 812. Zeroryu
+    linkedCardIds: string[]; // リンクしている相方のIDリスト
 }
 
 /**
@@ -105,9 +117,40 @@ export interface TurnState {
 /**
  * Representative of the entire Game State
  */
+import type { AbilityType, ContinuousEffect } from './effect';
+
+export interface PendingEffect {
+    id: string;
+    sourceCardId: string;
+    abilityType: AbilityType;
+    controllerId: PlayerId; // Player who controls the effect
+    // Logic to execute when resolved
+    // We can't easily serialize functions in state if we want to persist it,
+    // but for runtime state it's fine. Ideally this points to a static resolver ID.
+    // For now, let's keep it abstract or usage-defined.
+    resolve?: (state: GameState) => GameState;
+}
+
+/**
+ * Representative of the entire Game State
+ */
+import type { UnifiedCard } from './card-master';
+
+/**
+ * Representative of the entire Game State
+ */
 export interface GameState {
     players: Record<PlayerId, PlayerState>;
     cards: Record<CardId, CardState>; // Normalized state: All cards in one map
     turnState: TurnState; // Turn Progression
-    // Removed simple 'step' and 'turnPlayerId' as they are now in turnState
+
+    // Master Data for Logic Resolution
+    cardsMap: Record<string, UnifiedCard>;
+
+    // Rule 605.1 Effect Management
+    pendingEffects: PendingEffect[]; // Stack LIFO or Priority Queue based on Rule 101.4 (Turn Player priority)
+    continuousEffects: ContinuousEffect[]; // Active continuous effects
+
+    // Game Result
+    winner?: PlayerId | 'DRAW';
 }

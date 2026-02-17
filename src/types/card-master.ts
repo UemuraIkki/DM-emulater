@@ -1,40 +1,45 @@
 import { Civilization } from './card';
 
 // Rule 300.1 Card Types
-export enum CardType {
-    CREATURE = 'CREATURE',
-    SPELL = 'SPELL',
-    CROSS_GEAR = 'CROSS_GEAR',
-    CASTLE = 'CASTLE',
-    CELL = 'CELL', // G-Link Cell
-    WEAPON = 'WEAPON', // Dragheart Weapon
-    FORTRESS = 'FORTRESS', // Dragheart Fortress
-    KODO = 'KODO', // Forbidden Kodo (Start card)
-    FIELD = 'FIELD', // D2 Field etc
-    CORE = 'CORE',
-    AURA = 'AURA', // GR Aura
-    GI = 'GI', // Zeroryu Gi
-    SEIUN = 'SEIUN', // Zeroryu Seiun
-    ARTIFACT = 'ARTIFACT',
-    LAND = 'LAND',
-    RULE_PLUS = 'RULE_PLUS',
-    TAMASEED = 'TAMASEED',
-    DUELIST = 'DUELIST' // Special
-}
+// Rule 300.1 Card Types
+export const CardType = {
+    CREATURE: 'CREATURE',
+    SPELL: 'SPELL',
+    CROSS_GEAR: 'CROSS_GEAR',
+    CASTLE: 'CASTLE',
+    CELL: 'CELL', // G-Link Cell
+    WEAPON: 'WEAPON', // Dragheart Weapon
+    FORTRESS: 'FORTRESS', // Dragheart Fortress
+    KODO: 'KODO', // Forbidden Kodo (Start card)
+    FIELD: 'FIELD', // D2 Field etc
+    CORE: 'CORE',
+    AURA: 'AURA', // GR Aura
+    GI: 'GI', // Zeroryu Gi
+    SEIUN: 'SEIUN', // Zeroryu Seiun
+    ARTIFACT: 'ARTIFACT',
+    LAND: 'LAND',
+    RULE_PLUS: 'RULE_PLUS',
+    TAMASEED: 'TAMASEED',
+    DUELIST: 'DUELIST' // Special
+} as const;
+
+export type CardType = typeof CardType[keyof typeof CardType];
 
 // Special Sub-types or Meta-types
-export enum SpecialType {
-    EVOLUTION = 'EVOLUTION',
-    PSYCHIC = 'PSYCHIC',
-    DRAGHEART = 'DRAGHEART',
-    NEO = 'NEO',
-    GR = 'GR',
-    STAR_EVOLUTION = 'STAR_EVOLUTION',
-    TWINPACT = 'TWINPACT',
-    ZERORYU_PART = 'ZERORYU_PART',
-    DOLMADGEDDON_PART = 'DOLMADGEDDON_PART',
-    FORBIDDEN = 'FORBIDDEN'
-}
+export const SpecialType = {
+    EVOLUTION: 'EVOLUTION',
+    PSYCHIC: 'PSYCHIC',
+    DRAGHEART: 'DRAGHEART',
+    NEO: 'NEO',
+    GR: 'GR',
+    STAR_EVOLUTION: 'STAR_EVOLUTION',
+    TWINPACT: 'TWINPACT',
+    ZERORYU_PART: 'ZERORYU_PART',
+    DOLMADGEDDON_PART: 'DOLMADGEDDON_PART',
+    FORBIDDEN: 'FORBIDDEN'
+} as const;
+
+export type SpecialType = typeof SpecialType[keyof typeof SpecialType];
 
 export interface CardCharacteristics {
     name: string;        // 202.1
@@ -46,6 +51,10 @@ export interface CardCharacteristics {
     races?: string[];    // 203.1
     power?: number;      // 206.1
     text?: string;        // 205.1
+
+    // 816. Hyper Mode
+    hyperPower?: number;
+    hyperText?: string;
 }
 
 // Data from JSON (legacy support structure to be integrated)

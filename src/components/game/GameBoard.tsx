@@ -5,14 +5,31 @@ import type { UnifiedCard } from '../../types/card-master';
 interface GameBoardProps {
     gameState: GameState;
     playerId: PlayerId;
-    cardsMap: Record<string, UnifiedCard>; // We need to lookup UnifiedCard data to render
+    cardsMap: Record<string, UnifiedCard>;
+    onCardClick?: (cardId: string) => void;
+    selectedCardId?: string | null;
 }
 
 // Simple Card Component for Game Board
-const GameCard = ({ cardState, cardData, hidden }: { cardState: CardState, cardData?: UnifiedCard, hidden?: boolean }) => {
+const GameCard = ({
+    cardState,
+    cardData,
+    hidden,
+    onClick,
+    isSelected
+}: {
+    cardState: CardState,
+    cardData?: UnifiedCard,
+    hidden?: boolean,
+    onClick?: () => void,
+    isSelected?: boolean
+}) => {
     if (hidden || cardState.faceDown) {
         return (
-            <div className="w-16 h-24 bg-indigo-900 border-2 border-indigo-700 rounded shadow-sm flex items-center justify-center">
+            <div
+                className={`w-16 h-24 bg-indigo-900 border-2 border-indigo-700 rounded shadow-sm flex items-center justify-center ${isSelected ? 'ring-2 ring-yellow-400' : ''}`}
+                onClick={onClick}
+            >
                 <span className="text-xs text-indigo-400">Back</span>
             </div>
         );
@@ -22,13 +39,16 @@ const GameCard = ({ cardState, cardData, hidden }: { cardState: CardState, cardD
 
     return (
         <div
-            className={`w-16 h-24 bg-white border border-gray-300 rounded shadow-sm flex flex-col items-center p-1 text-[10px] overflow-hidden relative select-none
+            className={`w-16 h-24 bg-white border border-gray-300 rounded shadow-sm flex flex-col items-center p-1 text-[10px] overflow-hidden relative select-none cursor-pointer transition-transform
                 ${cardState.tapped ? 'transform rotate-90 origin-center' : ''}
+                ${isSelected ? 'ring-2 ring-yellow-400 scale-105 z-10' : 'hover:scale-105'}
             `}
             title={cardData.name}
+            onClick={onClick}
         >
             <div className="font-bold leading-tight text-center line-clamp-2">{cardData.name}</div>
-            {cardData.subPart && <div className="mt-1 text-gray-500 text-[8px]">{cardData.subPart.name}</div>}
+            <div className="mt-auto text-[8px] font-bold text-gray-400">{cardData.searchIndex.costs?.[0]}</div>
+            {cardData.subPart && <div className="mt-1 text-gray-500 text-[8px] border-t w-full text-center pt-0.5">{cardData.subPart.name}</div>}
         </div>
     );
 };
@@ -37,13 +57,13 @@ const GameCard = ({ cardState, cardData, hidden }: { cardState: CardState, cardD
 const ZoneArea = ({ title, cards, className }: { title: string, cards: React.ReactNode, className?: string }) => (
     <div className={`border border-slate-200 bg-slate-50/50 rounded p-2 flex flex-col ${className}`}>
         <div className="text-xs text-slate-400 font-bold mb-1 uppercase tracking-wider">{title}</div>
-        <div className="flex-1 flex flex-wrap content-start gap-1">
+        <div className="flex-1 flex flex-wrap content-start gap-1 overflow-auto">
             {cards}
         </div>
     </div>
 );
 
-export const GameBoard = ({ gameState, playerId, cardsMap }: GameBoardProps) => {
+export const GameBoard = ({ gameState, playerId, cardsMap, onCardClick, selectedCardId }: GameBoardProps) => {
     // Helper to get cards in a zone
     const getZoneCards = (pid: PlayerId, zone: ZoneId) => {
         return Object.values(gameState.cards)
@@ -58,6 +78,8 @@ export const GameBoard = ({ gameState, playerId, cardsMap }: GameBoardProps) => 
                 cardState={c}
                 cardData={cardsMap[c.masterId]}
                 hidden={forceHidden}
+                onClick={() => onCardClick?.(c.id)}
+                isSelected={selectedCardId === c.id}
             />
         ));
     };
