@@ -153,4 +153,7 @@ export interface GameState {
 
     // Game Result
     winner?: PlayerId | 'DRAW';
+
+    // Undo History
+    history?: Omit<GameState, 'history'>[];
 }

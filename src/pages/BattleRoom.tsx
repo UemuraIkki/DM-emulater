@@ -47,7 +47,7 @@ const BattleRoom = () => {
     };
 
     // Actions
-    const handleAction = (actionType: 'MANA' | 'PLAY' | 'TAP') => {
+    const handleAction = (actionType: 'MANA' | 'PLAY' | 'TAP' | 'DISCARD') => {
         if (!selectedCardId || !gameState) return;
 
         const card = gameState.cards[selectedCardId];
@@ -62,6 +62,9 @@ const BattleRoom = () => {
                 break;
             case 'TAP':
                 dispatch({ type: 'TAP_CARD', payload: { cardId: selectedCardId } });
+                break;
+            case 'DISCARD':
+                dispatch({ type: 'DISCARD_CARD', payload: { cardId: selectedCardId } });
                 break;
         }
         setSelectedCardId(null);
@@ -122,6 +125,12 @@ const BattleRoom = () => {
                                     className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-sm font-bold"
                                 >
                                     Play
+                                </button>
+                                <button
+                                    onClick={() => handleAction('DISCARD')}
+                                    className="bg-slate-600 hover:bg-slate-500 text-white px-3 py-1 rounded text-sm font-bold"
+                                >
+                                    Discard
                                 </button>
                             </>
                         )}

@@ -61,7 +61,19 @@ export const summonCreature = (state: GameState, cardId: CardId): GameState => {
 /**
  * 701.4 Cast Spell
  */
+/**
+ * 701.4 Cast Spell
+ */
 export const castSpell = (state: GameState, cardId: CardId): GameState => {
-    const newState = moveCard(state, cardId, ZoneId.PENDING);
+    // 1. Move to Pending (Rule 409.1)
+    let newState = moveCard(state, cardId, ZoneId.PENDING);
+
+    // 2. Resolve Effect (Placeholder)
+    console.log(`Resolving spell ${cardId}...`);
+    // TODO: Execute effect logic here
+
+    // 3. Move to Graveyard (Rule 605.2f)
+    newState = moveCard(newState, cardId, ZoneId.GRAVEYARD);
+
     return checkStateBasedActions(newState);
 };

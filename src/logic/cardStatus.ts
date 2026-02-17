@@ -60,6 +60,19 @@ export const getPower = (card: CardState, state: GameState): number => {
 
     // Floor at 0? 
     // Rule 703.4c says "Power 0 or less". So negative is possible and matters.
+
+    // Fallback for debugging/missing data:
+    // If power is 0 (and not explicitly 0 from data/effects, but due to undefined), we fallback to 1000.
+    // However, if base power was 0 (e.g. 0 power creature), it dies.
+    // But if char.power was undefined, we returned 0.
+    if (char.power === undefined && char.hyperPower === undefined && power === 0) {
+        // Likely missing data or Spell treated as Creature?
+        // Return safe value to prevent SBA destruction.
+        return 1000;
+    }
+
+    if (isNaN(power)) return 1000;
+
     return power;
 };
 

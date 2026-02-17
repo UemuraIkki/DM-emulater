@@ -70,6 +70,12 @@ export const GameControls: React.FC<GameControlsProps> = ({ gameState, playerId,
                 >
                     DEBUG: Untap All
                 </button>
+                <button
+                    onClick={() => dispatch({ type: 'UNDO' })}
+                    className="col-span-2 bg-gray-600 hover:bg-gray-500 text-xs py-1 px-2 rounded font-bold"
+                >
+                    UNDO
+                </button>
             </div>
         </div>
     );
