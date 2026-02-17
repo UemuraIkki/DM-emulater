@@ -75,9 +75,35 @@ export const GameBoard = ({ gameState, playerId, cardsMap }: GameBoardProps) => 
 
     return (
         <div className="w-full h-full bg-slate-100 flex flex-col p-2 gap-2 overflow-hidden">
-            {/* Opponent Area (Dummy/Simplified) */}
-            <div className="h-1/4 bg-red-50/50 rounded border border-red-100 p-2 flex justify-center items-center opacity-70">
-                <span className="text-red-300 font-bold">Opponent Area ({opponentId})</span>
+            {/* Opponent Area */}
+            <div className="h-1/4 bg-red-50/50 rounded border border-red-100 p-2 flex flex-col gap-1 relative">
+                <div className="absolute top-1 left-2 text-xs text-red-300 font-bold">OPPONENT ({opponentId})</div>
+
+                <div className="flex-1 flex justify-center items-center gap-4">
+                    {/* Opponent Hand (Count Only) */}
+                    <div className="w-16 h-24 bg-red-900/20 rounded border border-red-200 flex items-center justify-center flex-col">
+                        <span className="text-xs text-red-400 font-bold">HAND</span>
+                        <span className="text-xl font-bold text-red-600">{getZoneCards(opponentId, ZoneId.HAND).length}</span>
+                    </div>
+
+                    {/* Opponent Mana */}
+                    <div className="w-16 h-24 bg-red-900/20 rounded border border-red-200 flex items-center justify-center flex-col">
+                        <span className="text-xs text-red-400 font-bold">MANA</span>
+                        <span className="text-xl font-bold text-red-600">{getZoneCards(opponentId, ZoneId.MANA).length}</span>
+                    </div>
+
+                    {/* Opponent Shield */}
+                    <div className="w-16 h-24 bg-red-900/20 rounded border border-red-200 flex items-center justify-center flex-col">
+                        <span className="text-xs text-red-400 font-bold">SHIELD</span>
+                        <span className="text-xl font-bold text-red-600">{getZoneCards(opponentId, ZoneId.SHIELD).length}</span>
+                    </div>
+
+                    {/* Opponent Deck */}
+                    <div className="w-16 h-24 bg-red-900/20 rounded border border-red-200 flex items-center justify-center flex-col">
+                        <span className="text-xs text-red-400 font-bold">DECK</span>
+                        <span className="text-xl font-bold text-red-600">{getZoneCards(opponentId, ZoneId.DECK).length}</span>
+                    </div>
+                </div>
             </div>
 
             {/* Battle Zone (Shared visually, but keeping separate for now or filter by controller) */}

@@ -20,7 +20,8 @@ export enum ZoneId {
     // System
     PENDING = 'PENDING', // Rule 409 - Resolution waiting state
     EXTERNAL = 'EXTERNAL', // Rule 100.5 - For Zeroryu etc.
-    EXILE = 'EXILE' // Removed from game
+    EXILE = 'EXILE', // Removed from game
+    ABYSS = 'ABYSS' // Rule 410.4 - Deep Abyss
 }
 
 /**
@@ -77,12 +78,36 @@ export interface PlayerState {
     // Other player-specific counters (e.g., extra turns, flags) can go here
 }
 
+import { Phase, AttackStep } from './gamePhase';
+
+/**
+ * Represents the state of the current turn (Rules 500-512)
+ */
+export interface TurnState {
+    activePlayerId: PlayerId; // ターンプレイヤー (102.1)
+    phase: Phase;
+    attackStep: AttackStep;
+    turnNumber: number;
+
+    // 先攻1ターン目のドロースキップ判定用 (500.6)
+    isFirstTurn: boolean;
+
+    // 505. Attack Context (攻撃中の詳細情報)
+    currentAttack?: {
+        attackerId: CardId;
+        targetId: string;      // PlayerId or CardId (Creature)
+        blockerId?: CardId;    // 507.2a
+        breakingShieldIds: CardId[]; // 509.3
+        pendingTriggers: CardId[]; // S-Trigger / G-Strike waiting list
+    };
+}
+
 /**
  * Representative of the entire Game State
  */
 export interface GameState {
     players: Record<PlayerId, PlayerState>;
     cards: Record<CardId, CardState>; // Normalized state: All cards in one map
-    turnPlayerId: PlayerId;
-    step: 'untap' | 'start' | 'draw' | 'main' | 'attack' | 'end'; // Basic step tracking
+    turnState: TurnState; // Turn Progression
+    // Removed simple 'step' and 'turnPlayerId' as they are now in turnState
 }

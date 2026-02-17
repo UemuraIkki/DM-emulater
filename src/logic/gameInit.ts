@@ -4,6 +4,7 @@ import type { GameState, PlayerId, CardState, PlayerState } from '../types/gameS
 import type { Deck } from '../utils/deckStorage';
 import type { UnifiedCard } from '../types/card-master';
 import { SpecialType, CardType } from '../types/card-master';
+import { Phase, AttackStep } from '../types/gamePhase';
 import { getZone } from '../hooks/useDeckValidation'; // Helper to determine zone
 
 // Simple UUID generator if uuid package not available (likely valid for this env)
@@ -177,10 +178,19 @@ export const initializeGame = (
         }
     };
 
+    // -- 3. Setup Turn State --
+    const turnState = {
+        activePlayerId: userPlayerId,
+        phase: Phase.START_OF_TURN,
+        attackStep: AttackStep.NONE,
+        turnNumber: 1,
+        isFirstTurn: true,
+        currentAttack: undefined
+    };
+
     return {
         players,
         cards,
-        turnPlayerId: userPlayerId,
-        step: 'start'
+        turnState
     };
 };
