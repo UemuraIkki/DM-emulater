@@ -4,6 +4,7 @@ export type PlayerId = string;
 export interface ChatMessage {
     id: string;
     senderId: PlayerId;
+    senderName: string; // "Player" or "Opponent"
     text: string;
     timestamp: number;
 }

@@ -23,7 +23,7 @@ export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, card
     );
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-[1px]" onClick={onClose}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-[1px]" onClick={onClose}>
             <div className="bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-[90%] max-w-sm overflow-hidden flex" onClick={e => e.stopPropagation()}>
 
                 {/* Left: Card Preview (Mini) */}
