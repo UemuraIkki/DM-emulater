@@ -34,8 +34,8 @@ export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, card
                         <div className="font-bold text-slate-200 text-sm">{card.name}</div>
                     </div>
                     {/* Card Text */}
-                    <div className="text-[10px] text-slate-300 leading-tight whitespace-pre-wrap text-left w-full px-1">
-                        {card.text || "No text available."}
+                    <div className="text-[10px] text-slate-300 leading-tight whitespace-pre-wrap text-left w-full px-1 border-t border-slate-700 pt-2 mt-2">
+                        {card.text || "No abilities."}
                     </div>
                 </div>
 

@@ -20,7 +20,10 @@ export type GameAction =
     | { type: 'DISCARD_CARD'; payload: { cardId: string } }
     | { type: 'BREAK_SHIELD'; payload: { cardId: string } }
     | { type: 'ATTACK'; payload: { attackerId: string; targetId: string } }
-    | { type: 'UNDO' };
+    | { type: 'UNDO' }
+    | { type: 'SEND_MESSAGE'; payload: { senderId: string; text: string } }
+    | { type: 'MANUAL_MOVE_CARD'; payload: { cardId: string; toZone: ZoneId; options?: { tapped?: boolean; faceDown?: boolean; executionMessage?: string } } }
+    | { type: 'LOSE_GAME'; payload: { playerId: string } };
 
 export const gameReducer = (state: GameState | null, action: GameAction): GameState | null => {
     if (action.type === 'INITIALIZE_GAME') {
@@ -54,12 +57,102 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
     let newState: GameState | null = state;
 
     switch (action.type) {
+        case 'SEND_MESSAGE': {
+            const newMsg = {
+                id: crypto.randomUUID(),
+                senderId: action.payload.senderId,
+                senderName: action.payload.senderId === 'player1' ? 'Player 1' : 'Opponent',
+                text: action.payload.text,
+                timestamp: Date.now()
+            };
+            // Explicit return to ensure immutability and array creation
+            return {
+                ...state,
+                chatMessages: [...(state.chatMessages || []), newMsg]
+            };
+        }
+
+        case 'MANUAL_MOVE_CARD': {
+            // Robust Manual Move
+            const { cardId, toZone, options } = action.payload;
+            const card = state.cards[cardId];
+
+            if (!card) {
+                console.error(`[Manual] Card not found: ${cardId}`);
+                return state;
+            }
+
+            // Valid Zone Check
+            if (!Object.values(ZoneId).includes(toZone)) {
+                console.error(`[Manual] Invalid Zone: ${toZone}`);
+                return state;
+            }
+
+            // 1. Log
+            const cardName = state.cardsMap[card.masterId]?.name || 'Unknown Card';
+            const logMsg = options?.executionMessage
+                ? `[Manual] ${options.executionMessage} ${cardName}`
+                : `[Manual] Moved ${cardName} to ${toZone}`;
+
+            let logs = [...(state.logs || []), logMsg];
+
+            // 2. Move (Create new cards map)
+            // Use moveCard logic but inline/ensure it's explicit for manual override
+            // We want to FORCE move, ignoring restrictions like "Can't move from Abyss" if valid in sandbox?
+            // But let's stick to moveCard for consistency, or standard manual override.
+            // "Manual" implies god-mode, so let's bypass moveCard checks if needed, but moveCard is mostly safe.
+            // Let's use moveCard but ensure we get a new state object.
+
+            let movedState = moveCard(state, cardId, toZone);
+
+            // 3. Apply Options (Tap, FaceDown) reliably on the NEW card instance
+            // We must access movedState.cards to get the new instance
+            const movedCard = movedState.cards[cardId];
+            if (movedCard) {
+                // Apply manual overrides
+                const updatedCard = {
+                    ...movedCard,
+                    tapped: options?.tapped !== undefined ? options.tapped : movedCard.tapped,
+                    faceDown: options?.faceDown !== undefined ? options.faceDown : movedCard.faceDown
+                };
+                movedState = {
+                    ...movedState,
+                    cards: {
+                        ...movedState.cards,
+                        [cardId]: updatedCard
+                    }
+                };
+            }
+
+            // Return final state with logs
+            return {
+                ...movedState,
+                logs
+            };
+        }
+
+        case 'LOSE_GAME': {
+            // Surrender / Defeat
+            const loserId = action.payload.playerId;
+            const winnerId = Object.keys(state.players).find(id => id !== loserId) || 'DRAW';
+            return {
+                ...state,
+                winner: winnerId,
+                logs: [...(state.logs || []), `Player ${loserId} surrendered. Winner: ${winnerId}`]
+            };
+        }
+
         case 'NEXT_PHASE': {
+            // ... existing next phase logic ... 
+            // (Keeping existing logic but ensuring it returns a new object strictly)
             const tempState: GameState = {
                 ...state,
                 turnState: { ...state.turnState },
                 cards: { ...state.cards }
             };
+            // ... (rest of next phase logic is complex, assuming previous implementation was mostly correct but let's wrap it safe)
+            // For brevity in this tool call, I will copy the previous NEXT_PHASE logic but formatted.
+            // Actually, I should use the existing logic to avoid breaking it, just ensuring the Switch block structure.
             const currentPhase = tempState.turnState.phase;
             let phaseResultState = tempState;
 
@@ -103,7 +196,7 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
                 .sort((a, b) => (a.stackOrder || 0) - (b.stackOrder || 0));
             const topCard = deck[deck.length - 1];
             if (!topCard) {
-                newState = state;
+                newState = { ...state, logs: [...(state.logs || []), "Deck empty!"] };
             } else {
                 const moved = moveCard(state, topCard.id, ZoneId.HAND);
                 newState = checkStateBasedActions(moved);
@@ -111,16 +204,19 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
             break;
         }
 
+        // ... Keep other actions if needed, or rely on manual move.
+        // Keeping MANA_CHARGE, PLAY_CARD, etc. for compatibility if UI calls them.
         case 'MANA_CHARGE': {
             newState = chargeMana(state, action.payload.cardId);
             break;
         }
-
-
-
-        // ... (Inside reducer switch)
-
         case 'PLAY_CARD': {
+            // ... existing PLAY_CARD logic ...
+            // For safety, let's keep the previous implementation or just map it to Manual Move?
+            // The user asked for "Robust Manual Move Logic", forcing manual actions.
+            // If PLAY_CARD is still used, it uses strict rules. 
+            // Let's assume the UI primarily uses MANUAL_MOVE_CARD now.
+            // I'll keep the previous block implementation to avoid regression if clicked.
             const card = state.cards[action.payload.cardId];
             if (!card) {
                 newState = state;
@@ -128,41 +224,21 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
                 const master = state.cardsMap[card.masterId];
                 const cost = master?.searchIndex?.costs?.[0] || 0;
                 const civs = master?.searchIndex?.civilizations || [];
-
-                // Try to pay mana
                 const manaResult = tapManaForCost(state, action.payload.playerId, cost, civs);
-
                 if (manaResult.success) {
                     newState = manaResult.newState;
                     newState.logs = [...(newState.logs || []), `Played ${master.name}`];
-                    // Proceed to summon/cast
-                    // Determine Action based on Card Type
-                    // Priority: Spell > Castle > Others (Creature/Field/CrossGear)
-                    // We use searchIndex flags for convenience.
-
                     if (master.searchIndex?.isSpell) {
-                        // Spell -> Cast
                         newState = castSpell(newState, action.payload.cardId);
                     } else if (master.searchIndex?.isCastle) {
-                        // Castle -> Fortify
-                        // TODO: Require target shield selection? For now auto-target or just put in zone.
                         newState = fortifyCastle(newState, action.payload.cardId);
                     } else {
-                        // Creature, Field, CrossGear, Weapon, Fortaleza, Aura, Artifact -> Battle Zone
-                        // "Summon" applies to Creatures, but physically putting into Battle Zone is the same action for Fields etc.
                         newState = summonCreature(newState, action.payload.cardId);
-
-                        // Summoning Sickness: Only for Creatures (and maybe some others?)
-                        // Fields/CrossGears don't attack/tap usually, but they don't have sickness logic in same way.
-                        // Default to having sickness is safer to prevent immediate attacking if they somehow become creatures.
                         if (newState.cards[action.payload.cardId]) {
                             newState.cards[action.payload.cardId].hasSummoningSickness = true;
                         }
                     }
                 } else {
-                    // Failed to pay
-                    // TODO: UI should prevent this, but reducer should also allow for feedback?
-                    // For now, no-op or log error
                     console.warn("Not enough mana!");
                     newState = state;
                 }
@@ -172,11 +248,10 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
 
         case 'ATTACK': {
             newState = initiateAttack(state, action.payload.attackerId, action.payload.targetId);
-            newState = resolveBattle(newState); // Simplify: Resolve immediately for now
+            newState = resolveBattle(newState);
             break;
         }
 
-        // Keep TAP_CARD for manual mana tap if needed, or simple abilities
         case 'TAP_CARD': {
             newState = tapCard(state, action.payload.cardId);
             break;
@@ -210,7 +285,6 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
             return state;
     }
 
-    // Attach history to new state
     if (newState && newState !== state) {
         return {
             ...newState,
@@ -219,4 +293,15 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
     }
 
     return state;
+};
+
+// Attach history to new state
+if (newState && newState !== state) {
+    return {
+        ...newState,
+        history: newHistory
+    };
+}
+
+return state;
 };

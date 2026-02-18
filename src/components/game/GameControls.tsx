@@ -57,6 +57,20 @@ export const GameControls: React.FC<GameControlsProps> = ({ gameState, playerId,
                     UNDO
                 </button>
             </div>
+
+            {/* Surrender Button */}
+            <div className="mt-2 text-center">
+                <button
+                    onClick={() => {
+                        if (confirm("Are you sure you want to surrender?")) {
+                            dispatch({ type: 'LOSE_GAME', payload: { playerId } });
+                        }
+                    }}
+                    className="text-[10px] text-red-500 hover:text-red-400 hover:underline"
+                >
+                    Surrender
+                </button>
+            </div>
         </div>
     );
 };

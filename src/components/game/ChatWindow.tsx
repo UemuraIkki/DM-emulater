@@ -27,7 +27,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ messages, playerId, onSe
     };
 
     return (
-        <div className="fixed bottom-0 right-4 w-72 h-64 flex flex-col bg-slate-900/95 border border-slate-700 rounded-t-lg shadow-xl z-[90] overflow-hidden backdrop-blur-sm">
+        <div className="fixed bottom-0 right-4 w-72 h-64 flex flex-col bg-slate-900/95 border border-slate-700 rounded-t-lg shadow-xl z-[9999] overflow-hidden backdrop-blur-sm">
             <div className="bg-slate-800 px-3 py-1 flex justify-between items-center text-xs text-slate-400 font-bold border-b border-slate-700">
                 <span>CHAT</span>
                 <span className="text-[10px] bg-slate-700 px-1 rounded ml-auto">{messages.length}</span>
