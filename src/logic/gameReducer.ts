@@ -295,13 +295,3 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
     return state;
 };
 
-// Attach history to new state
-if (newState && newState !== state) {
-    return {
-        ...newState,
-        history: newHistory
-    };
-}
-
-return state;
-};
