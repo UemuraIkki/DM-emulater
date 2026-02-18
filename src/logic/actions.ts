@@ -77,3 +77,23 @@ export const castSpell = (state: GameState, cardId: CardId): GameState => {
 
     return checkStateBasedActions(newState);
 };
+
+/**
+ * 701.15 Fortify (Castle -> Shield Zone)
+ */
+export const fortifyCastle = (state: GameState, cardId: CardId): GameState => {
+    // castles attach to shields, but for now just move to shield zone face up?
+    // Rule says "Attach to shield".
+    // If we don't have attachment logic, we just put it in shield zone.
+    // However, user said "ZoneId.SHIELD_ZONE".
+    const newState = moveCard(state, cardId, ZoneId.SHIELD);
+
+    // Castles are usually face up? check rules. 
+    // "Fortify" targets a shield.
+    // For now, let's just move it there to satisfy the requirement "go to SHIELD_ZONE".
+    if (newState.cards[cardId]) {
+        newState.cards[cardId].faceDown = false; // Castles are face up
+    }
+
+    return checkStateBasedActions(newState);
+};

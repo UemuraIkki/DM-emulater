@@ -177,45 +177,55 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
             {/* --- BOTTOM AREA: PLAYER --- */}
             <div className="h-[57%] flex flex-col bg-slate-900/10 p-2 pb-0 pt-8 relative">
-                {/* Battle Zone */}
+                {/* Row 1: Battle Zone */}
                 <div className="flex-[2] flex justify-center items-center py-2 gap-2 z-10">
                     {myBattle.length === 0 && <div className="text-slate-700/20 font-bold text-5xl absolute select-none pointer-events-none">BATTLE ZONE</div>}
                     {renderCardList(myBattle, cardsMap, onCardClick, selectedCardId)}
                 </div>
 
-                {/* Shield Zone */}
-                <div className="h-24 flex justify-center items-center gap-2 my-1 z-10">
-                    {renderCardList(myShields, cardsMap, onCardClick, selectedCardId, true)}
+                {/* Row 2: Mana Zone (Center) */}
+                <div className="flex-none h-32 flex justify-center items-center my-1 z-20">
+                    <div className="w-full max-w-3xl h-full bg-slate-800/40 rounded border border-slate-700/30 p-1 flex flex-wrap content-start items-start gap-1 overflow-visible transform rotate-180 hover:bg-slate-800 transition-colors">
+                        <div className="w-full text-[10px] text-slate-400 text-center mb-1 transform rotate-180">Mana {myManaUntapped}/{myMana.length}</div>
+                        {renderCardList(myMana, cardsMap, onCardClick, selectedCardId, false, 'transform rotate-180')}
+                    </div>
                 </div>
 
-                {/* Resources: Mana, Hand, Grave */}
-                {/* We use flex-end to push Hand to bottom */}
+                {/* Row 3: Shields & Hand (Horizontal Split) */}
                 <div className="flex-[2] flex gap-2 items-end min-h-0 pb-2">
                     {/* Left: Deck / Grave / Hyper */}
-                    <div className="w-24 flex flex-col gap-1 h-32 justify-end mb-1 z-20">
+                    <div className="w-24 flex flex-col gap-1 h-32 justify-end mb-1 z-20 shrink-0">
                         <ZoneButton label="Deck" count={myDeck.length} className="flex-1 border-dashed opacity-50 hover:opacity-100" />
                         <ZoneButton label="Grave" count={myGrave.length} onClick={() => onZoneClick(playerId, ZoneId.GRAVEYARD)} className="flex-1 bg-slate-800" />
                         <ZoneButton label="Hyper" count={myHyper.length} onClick={() => onZoneClick(playerId, ZoneId.HYPER_SPATIAL)} className="flex-1 bg-indigo-900" />
                     </div>
 
-                    {/* Left-Center: Mana Zone (Rotated 180) */}
-                    <div className="w-40 h-40 bg-slate-800/40 rounded border border-slate-700/30 p-1 flex flex-wrap content-start items-start gap-1 overflow-visible transform rotate-180 hover:z-30 transition-all hover:bg-slate-800">
-                        {/* Counter (Correctly oriented relative to player?) No, it's inside 180 div. 
-                             If we want text readable, we un-rotate it. */}
-                        <div className="w-full text-[10px] text-slate-400 text-center mb-1 transform rotate-180">Mana {myManaUntapped}/{myMana.length}</div>
-                        {renderCardList(myMana, cardsMap, onCardClick, selectedCardId, false, 'transform rotate-180')}
+                    {/* Shield Zone (Next to Hand) */}
+                    <div className="flex-1 h-28 flex justify-center items-center bg-slate-900/20 rounded border border-white/5 gap-1 px-2 z-20">
+                        {/* Shields Label? */}
+                        {myShields.map((c, i) => (
+                            <div key={c.id} className="transform hover:-translate-y-2 transition-transform">
+                                <GameCard
+                                    cardState={c}
+                                    cardData={cardsMap[c.masterId]}
+                                    hidden={true}
+                                    onClick={() => onCardClick(c.id)}
+                                    isSelected={selectedCardId === c.id}
+                                />
+                            </div>
+                        ))}
+                        {myShields.length === 0 && <span className="text-xs text-slate-600 font-bold uppercase">No Shields</span>}
                     </div>
 
-                    {/* Center-Right: Hand (Expanded) */}
-                    <div className="flex-1 h-32 relative z-30">
+                    {/* Hand (Right Side) */}
+                    <div className="flex-[2] h-32 relative z-30">
                         <div className="absolute inset-x-0 bottom-[-10px] h-40 flex justify-center items-end gap-[-50px] px-8 hover:gap-[-10px] transition-all">
-                            {/* Overlapping Cards */}
                             <div className="flex justify-center items-end -space-x-8 hover:-space-x-2 transition-all duration-300 w-full px-10">
                                 {myHand.map((c, i) => (
                                     <div
                                         key={c.id}
                                         className="relative transform hover:-translate-y-8 hover:scale-110 hover:z-50 transition-all duration-200 cursor-pointer origin-bottom"
-                                        style={{ marginBottom: i % 2 === 0 ? '0px' : '4px' }} // Slight fan effect zigzag
+                                        style={{ marginBottom: i % 2 === 0 ? '0px' : '4px' }}
                                     >
                                         <GameCard
                                             cardState={c}

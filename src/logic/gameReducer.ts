@@ -3,7 +3,7 @@ import type { GameState } from '../types/gameState';
 import { startTurn, drawStep, endTurn } from './turnManager';
 import { Phase, AttackStep } from '../types/gamePhase';
 import { checkStateBasedActions } from './stateBasedActions';
-import { tapCard, chargeMana, summonCreature, castSpell, discardCard, breakShield } from './actions';
+import { tapCard, chargeMana, summonCreature, castSpell, discardCard, breakShield, fortifyCastle } from './actions';
 import { moveCard } from './zoneMovement';
 import { ZoneId } from '../types/gameState';
 import { tapManaForCost } from './manaSystem';
@@ -132,14 +132,25 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
                     newState = manaResult.newState;
                     newState.logs = [...(newState.logs || []), `Played ${master.name}`];
                     // Proceed to summon/cast
-                    const isSpell = master?.searchIndex?.isSpell;
-                    if (isSpell) {
+                    // Determine Action based on Card Type
+                    // Priority: Spell > Castle > Others (Creature/Field/CrossGear)
+                    // We use searchIndex flags for convenience.
+
+                    if (master.searchIndex?.isSpell) {
+                        // Spell -> Cast
                         newState = castSpell(newState, action.payload.cardId);
+                    } else if (master.searchIndex?.isCastle) {
+                        // Castle -> Fortify
+                        // TODO: Require target shield selection? For now auto-target or just put in zone.
+                        newState = fortifyCastle(newState, action.payload.cardId);
                     } else {
+                        // Creature, Field, CrossGear, Weapon, Fortaleza, Aura, Artifact -> Battle Zone
+                        // "Summon" applies to Creatures, but physically putting into Battle Zone is the same action for Fields etc.
                         newState = summonCreature(newState, action.payload.cardId);
-                        // Set Summoning Sickness logic (default true for creatures)
-                        // summonCreature should ideally handle this, but we can enforce it here if needed
-                        // For now, cardState defaults?
+
+                        // Summoning Sickness: Only for Creatures (and maybe some others?)
+                        // Fields/CrossGears don't attack/tap usually, but they don't have sickness logic in same way.
+                        // Default to having sickness is safer to prevent immediate attacking if they somehow become creatures.
                         if (newState.cards[action.payload.cardId]) {
                             newState.cards[action.payload.cardId].hasSummoningSickness = true;
                         }

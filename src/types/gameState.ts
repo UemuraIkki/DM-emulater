@@ -1,6 +1,13 @@
 export type CardId = string; // UUID
 export type PlayerId = string;
 
+export interface ChatMessage {
+    id: string;
+    senderId: PlayerId;
+    text: string;
+    timestamp: number;
+}
+
 /**
  * Rule 400.1 + System Zones
  */
@@ -144,6 +151,9 @@ export interface GameState {
     cards: Record<CardId, CardState>; // Normalized state: All cards in one map
     turnState: TurnState; // Turn Progression
     logs: string[];
+
+    // Chat
+    chatMessages: ChatMessage[];
 
     // Master Data for Logic Resolution
     cardsMap: Record<string, UnifiedCard>;
