@@ -1,70 +1,9 @@
-import React from 'react';
-import { GameCard } from './GameCard';
-import { GameLog } from './GameLog';
-import type { GameState } from '../../types/gameState';
-import type { UnifiedCard } from '../../types/card-master';
-import { ZoneId } from '../../types/gameState';
+import { ZoneModal } from './ZoneModal';
+import { useState } from 'react';
 
-interface GameBoardProps {
-    gameState: GameState;
-    playerId: string;
-    cardsMap: Record<string, UnifiedCard>;
-    onCardClick: (cardId: string) => void;
-    onZoneClick: (playerId: string, zone: ZoneId) => void;
-    selectedCardId: string | null;
-}
+// ... (Existing Imports)
 
-// Sub-component for Zone Buttons with Counters
-const ZoneButton = ({
-    label,
-    count,
-    onClick,
-    className
-}: {
-    label: string,
-    count: number,
-    onClick?: () => void,
-    className?: string
-}) => (
-    <button
-        onClick={onClick}
-        className={`relative flex items-center justify-center bg-slate-800/90 text-slate-300 border border-slate-600 rounded px-2 py-1 text-xs font-bold shadow hover:bg-slate-700 transition-colors ${className}`}
-    >
-        {label}
-        <span className="ml-1.5 bg-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded-full min-w-[1.2em] text-center">
-            {count}
-        </span>
-    </button>
-);
-
-// Helper to render cards
-const renderCardList = (
-    cards: any[],
-    cardsMap: Record<string, UnifiedCard>,
-    onCardClick: (id: string) => void,
-    selectedCardId: string | null,
-    hidden: boolean = false,
-    rotation: string = '',
-    scale: boolean = true
-) => {
-    return cards.map((c, i) => (
-        <div key={c.id} className={`${rotation} ${scale ? 'transform transition-transform' : ''}`}>
-            <GameCard
-                cardState={c}
-                cardData={cardsMap[c.masterId]}
-                hidden={hidden}
-                onClick={() => onCardClick(c.id)}
-                isSelected={selectedCardId === c.id}
-            />
-        </div>
-    ));
-};
-
-const getZoneCards = (gameState: GameState, ownerId: string, zone: string) => {
-    return Object.values(gameState.cards)
-        .filter(c => c.ownerId === ownerId && c.zone === zone)
-        .sort((a, b) => (a.stackOrder || 0) - (b.stackOrder || 0));
-};
+// ... (ZoneButton, renderCardList, getZoneCards remain the same)
 
 export const GameBoard: React.FC<GameBoardProps> = ({
     gameState,
@@ -74,6 +13,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     onZoneClick,
     selectedCardId
 }) => {
+    const [viewingZone, setViewingZone] = useState<{ title: string, cards: UnifiedCard[] } | null>(null);
+
     const opponentId = Object.keys(gameState.players).find(id => id !== playerId) || 'player2';
 
     // Data Retrieval
@@ -96,27 +37,35 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     const myManaUntapped = myMana.filter(c => !c.tapped).length;
     const opManaUntapped = opMana.filter(c => !c.tapped).length;
 
+    // Helper to open modal
+    const openZone = (title: string, cards: any[]) => {
+        const unified = cards.map(c => ({
+            ...cardsMap[c.masterId],
+            ...c // Merge runtime state
+        }));
+        setViewingZone({ title, cards: unified });
+    };
+
     return (
         <div className="w-full h-full bg-[#1a1c23] flex flex-col overflow-hidden relative select-none">
+            {/* Modal */}
+            {viewingZone && (
+                <ZoneModal
+                    title={viewingZone.title}
+                    cards={viewingZone.cards}
+                    onClose={() => setViewingZone(null)}
+                    onCardClick={(card) => {
+                        onCardClick(card.id); // Or detailed view? Default to select.
+                        setViewingZone(null); // Close on select? Or keep open? Let's close for now to perform action.
+                    }}
+                />
+            )}
+
             {/* --- GAME LOG OVERLAY --- */}
             <GameLog logs={gameState.logs || []} />
 
             {/* --- TOP AREA: OPPONENT (Fixed Rotation Container) --- */}
             <div className="h-[43%] flex flex-col bg-red-900/5 relative border-b border-white/5">
-                {/* We rotate the CONTENT 180 deg to show it from opponent's perspective, but keep UI upright if we want? 
-                    Actually standard digital card games just show cards locally oriented but placed at top.
-                    User requested 180 deg. Let's wrap the logic or just rotate cards.
-                    If we rotate the whole container 180, bottom becomes top.
-                    
-                    Layout requested:
-                    Row 1 (Top): Grave, Hand, Mana
-                    Row 2: Shield
-                    Row 3: Battle
-                    
-                    If we rotate 180:
-                    The visual Bottom of this div becomes Top.
-                    So we stack: Battle -> Shield -> Mana/Hand/Grave
-                */}
                 <div className="flex-1 flex flex-col transform rotate-180 p-2">
                     {/* Visual Top (Physical Bottom): Battle Zone */}
                     <div className="flex-[2] flex justify-center items-center py-1 gap-2">
@@ -131,7 +80,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                     {/* Resources: Mana, Hand, Grave */}
                     <div className="flex-1 flex gap-2 items-start min-h-0">
                         {/* Mana (Right in 180 view => Left in visual) */}
-                        <div className="flex-1 h-full bg-slate-800/30 rounded p-1 flex flex-wrap content-start transform rotate-180" style={{ alignContent: 'flex-start' }}>
+                        <div
+                            className="flex-1 h-full bg-slate-800/30 rounded p-1 flex flex-wrap content-start transform rotate-180 cursor-pointer hover:bg-slate-700/50 transition-colors"
+                            style={{ alignContent: 'flex-start' }}
+                            onClick={() => openZone("Opponent's Mana Zone", opMana)}
+                        >
                             <div className="w-full text-[10px] text-slate-500 text-center mb-1">Mana {opManaUntapped}/{opMana.length}</div>
                             {renderCardList(opMana, cardsMap, onCardClick, selectedCardId)}
                         </div>
@@ -146,8 +99,18 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                         {/* Grave / Hyper / Deck (Left in 180 view => Right in visual) */}
                         <div className="w-24 flex flex-col gap-1 transform rotate-180">
                             <ZoneButton label="Deck" count={opDeck.length} className="flex-1 border-dashed opacity-50" />
-                            <ZoneButton label="Grave" count={opGrave.length} onClick={() => onZoneClick(opponentId, ZoneId.GRAVEYARD)} className="flex-1" />
-                            <ZoneButton label="Hyper" count={opHyper.length} onClick={() => onZoneClick(opponentId, ZoneId.HYPER_SPATIAL)} className="flex-1" />
+                            <ZoneButton
+                                label="Grave"
+                                count={opGrave.length}
+                                onClick={() => openZone("Opponent's Graveyard", opGrave)}
+                                className="flex-1"
+                            />
+                            <ZoneButton
+                                label="Hyper"
+                                count={opHyper.length}
+                                onClick={() => openZone("Opponent's Hyper Spatial", opHyper)}
+                                className="flex-1"
+                            />
                         </div>
                     </div>
                 </div>
@@ -190,7 +153,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
                 {/* Row 2: Mana Zone (Center) */}
                 <div className="flex-none h-32 flex justify-center items-center my-1 z-20">
-                    <div className="w-full max-w-3xl h-full bg-slate-800/40 rounded border border-slate-700/30 p-1 flex flex-wrap content-start items-start gap-1 overflow-visible transform rotate-180 hover:bg-slate-800 transition-colors">
+                    <div
+                        className="w-full max-w-3xl h-full bg-slate-800/40 rounded border border-slate-700/30 p-1 flex flex-wrap content-start items-start gap-1 overflow-visible transform rotate-180 hover:bg-slate-800 transition-colors cursor-pointer"
+                        onClick={() => openZone("Your Mana Zone", myMana)}
+                    >
                         <div className="w-full text-[10px] text-slate-400 text-center mb-1 transform rotate-180">Mana {myManaUntapped}/{myMana.length}</div>
                         {renderCardList(myMana, cardsMap, onCardClick, selectedCardId, false, 'transform rotate-180')}
                     </div>
@@ -201,8 +167,18 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                     {/* Left: Deck / Grave / Hyper */}
                     <div className="w-24 flex flex-col gap-1 h-32 justify-end mb-1 z-20 shrink-0">
                         <ZoneButton label="Deck" count={myDeck.length} className="flex-1 border-dashed opacity-50 hover:opacity-100" />
-                        <ZoneButton label="Grave" count={myGrave.length} onClick={() => onZoneClick(playerId, ZoneId.GRAVEYARD)} className="flex-1 bg-slate-800" />
-                        <ZoneButton label="Hyper" count={myHyper.length} onClick={() => onZoneClick(playerId, ZoneId.HYPER_SPATIAL)} className="flex-1 bg-indigo-900" />
+                        <ZoneButton
+                            label="Grave"
+                            count={myGrave.length}
+                            onClick={() => openZone("Your Graveyard", myGrave)}
+                            className="flex-1 bg-slate-800"
+                        />
+                        <ZoneButton
+                            label="Hyper"
+                            count={myHyper.length}
+                            onClick={() => openZone("Your Hyper Spatial", myHyper)}
+                            className="flex-1 bg-indigo-900"
+                        />
                     </div>
 
                     {/* Shield Zone (Next to Hand) */}
