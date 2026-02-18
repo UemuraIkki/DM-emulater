@@ -3,9 +3,11 @@ import type { GameState } from '../types/gameState';
 import { startTurn, drawStep, endTurn } from './turnManager';
 import { Phase, AttackStep } from '../types/gamePhase';
 import { checkStateBasedActions } from './stateBasedActions';
-import { tapCard, chargeMana, summonCreature, castSpell, discardCard } from './actions';
+import { tapCard, chargeMana, summonCreature, castSpell, discardCard, breakShield } from './actions';
 import { moveCard } from './zoneMovement';
 import { ZoneId } from '../types/gameState';
+import { tapManaForCost } from './manaSystem';
+import { initiateAttack, resolveBattle } from './battleSystem';
 
 export type GameAction =
     | { type: 'INITIALIZE_GAME'; payload: GameState }
@@ -16,6 +18,8 @@ export type GameAction =
     | { type: 'TAP_CARD'; payload: { cardId: string } } // Attack/Tap capability
     | { type: 'UNTAP_ALL'; payload: { playerId: string } } // Debug/Manual Untap
     | { type: 'DISCARD_CARD'; payload: { cardId: string } }
+    | { type: 'BREAK_SHIELD'; payload: { cardId: string } }
+    | { type: 'ATTACK'; payload: { attackerId: string; targetId: string } }
     | { type: 'UNDO' };
 
 export const gameReducer = (state: GameState | null, action: GameAction): GameState | null => {
@@ -108,22 +112,56 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
             break;
         }
 
+
+
+        // ... (Inside reducer switch)
+
         case 'PLAY_CARD': {
             const card = state.cards[action.payload.cardId];
             if (!card) {
                 newState = state;
             } else {
                 const master = state.cardsMap[card.masterId];
-                const isSpell = master?.searchIndex?.isSpell;
-                if (isSpell) {
-                    newState = castSpell(state, action.payload.cardId);
+                const cost = master?.searchIndex?.costs?.[0] || 0;
+                const civs = master?.searchIndex?.civilizations || [];
+
+                // Try to pay mana
+                const manaResult = tapManaForCost(state, action.payload.playerId, cost, civs);
+
+                if (manaResult.success) {
+                    newState = manaResult.newState;
+                    newState.logs = [...(newState.logs || []), `Played ${master.name}`];
+                    // Proceed to summon/cast
+                    const isSpell = master?.searchIndex?.isSpell;
+                    if (isSpell) {
+                        newState = castSpell(newState, action.payload.cardId);
+                    } else {
+                        newState = summonCreature(newState, action.payload.cardId);
+                        // Set Summoning Sickness logic (default true for creatures)
+                        // summonCreature should ideally handle this, but we can enforce it here if needed
+                        // For now, cardState defaults?
+                        if (newState.cards[action.payload.cardId]) {
+                            newState.cards[action.payload.cardId].hasSummoningSickness = true;
+                        }
+                    }
                 } else {
-                    newState = summonCreature(state, action.payload.cardId);
+                    // Failed to pay
+                    // TODO: UI should prevent this, but reducer should also allow for feedback?
+                    // For now, no-op or log error
+                    console.warn("Not enough mana!");
+                    newState = state;
                 }
             }
             break;
         }
 
+        case 'ATTACK': {
+            newState = initiateAttack(state, action.payload.attackerId, action.payload.targetId);
+            newState = resolveBattle(newState); // Simplify: Resolve immediately for now
+            break;
+        }
+
+        // Keep TAP_CARD for manual mana tap if needed, or simple abilities
         case 'TAP_CARD': {
             newState = tapCard(state, action.payload.cardId);
             break;
@@ -131,6 +169,11 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
 
         case 'DISCARD_CARD': {
             newState = discardCard(state, action.payload.cardId);
+            break;
+        }
+
+        case 'BREAK_SHIELD': {
+            newState = breakShield(state, action.payload.cardId);
             break;
         }
 

@@ -2,14 +2,13 @@ import { useEffect, useState, useReducer } from 'react';
 import { DeckSelector } from '../components/game/DeckSelector';
 import { GameBoard } from '../components/game/GameBoard';
 import { GameControls } from '../components/game/GameControls';
+import { CardInteraction } from '../components/game/CardInteraction';
 import { initializeGame } from '../logic/gameInit';
 import { gameReducer } from '../logic/gameReducer';
 import { normalizeCards } from '../utils/cardProcessor';
 import type { UnifiedCard } from '../types/card-master';
 import type { CardData } from '../types';
 import type { Deck } from '../utils/deckStorage';
-import type { GameState } from '../types/gameState';
-
 const BattleRoom = () => {
     const [gameStarted, setGameStarted] = useState(false);
     const [gameState, dispatch] = useReducer(gameReducer, null);
@@ -47,7 +46,7 @@ const BattleRoom = () => {
     };
 
     // Actions
-    const handleAction = (actionType: 'MANA' | 'PLAY' | 'TAP' | 'DISCARD') => {
+    const handleAction = (actionType: 'MANA' | 'PLAY' | 'TAP' | 'DISCARD' | 'BREAK_SHIELD') => {
         if (!selectedCardId || !gameState) return;
 
         const card = gameState.cards[selectedCardId];
@@ -65,6 +64,9 @@ const BattleRoom = () => {
                 break;
             case 'DISCARD':
                 dispatch({ type: 'DISCARD_CARD', payload: { cardId: selectedCardId } });
+                break;
+            case 'BREAK_SHIELD':
+                dispatch({ type: 'BREAK_SHIELD', payload: { cardId: selectedCardId } });
                 break;
         }
         setSelectedCardId(null);
@@ -103,66 +105,15 @@ const BattleRoom = () => {
             </div>
 
             {/* Selected Card Context Actions Overlay */}
-            {selectedCard && selectedCard.controllerId === 'player1' && (
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/90 p-4 rounded-lg shadow-xl border border-indigo-200 flex gap-4 z-50">
-                    <div className="flex flex-col">
-                        <span className="text-xs font-bold text-gray-500 uppercase">Selected:</span>
-                        <span className="font-bold">{cardsMap[selectedCard.masterId]?.name}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        {/* Hand Actions */}
-                        {selectedCard.zone === 'HAND' && (
-                            <>
-                                <button
-                                    onClick={() => handleAction('MANA')}
-                                    className="bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded text-sm font-bold"
-                                >
-                                    Charge Mana
-                                </button>
-                                <button
-                                    onClick={() => handleAction('PLAY')}
-                                    className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-sm font-bold"
-                                >
-                                    Play
-                                </button>
-                                <button
-                                    onClick={() => handleAction('DISCARD')}
-                                    className="bg-slate-600 hover:bg-slate-500 text-white px-3 py-1 rounded text-sm font-bold"
-                                >
-                                    Discard
-                                </button>
-                            </>
-                        )}
-
-                        {/* Battle Zone Actions */}
-                        {selectedCard.zone === 'BATTLE_ZONE' && !selectedCard.tapped && (
-                            <button
-                                onClick={() => handleAction('TAP')}
-                                className="bg-red-600 hover:bg-red-500 text-white px-3 py-1 rounded text-sm font-bold"
-                            >
-                                Tap / Attack
-                            </button>
-                        )}
-
-                        {/* Mana Zone Actions */}
-                        {selectedCard.zone === 'MANA' && !selectedCard.tapped && (
-                            <button
-                                onClick={() => handleAction('TAP')}
-                                className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-sm font-bold"
-                            >
-                                Tap for Mana
-                            </button>
-                        )}
-
-                        <button
-                            onClick={() => setSelectedCardId(null)}
-                            className="text-gray-400 hover:text-gray-600 ml-2"
-                        >
-                            ✕
-                        </button>
-                    </div>
-                </div>
+            {selectedCard && (
+                <CardInteraction
+                    gameState={gameState}
+                    selectedCardId={selectedCardId!}
+                    cardsMap={cardsMap}
+                    playerId="player1"
+                    onAction={handleAction}
+                    onClose={() => setSelectedCardId(null)}
+                />
             )}
 
             {/* General Game Controls */}

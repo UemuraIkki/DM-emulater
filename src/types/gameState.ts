@@ -143,6 +143,7 @@ export interface GameState {
     players: Record<PlayerId, PlayerState>;
     cards: Record<CardId, CardState>; // Normalized state: All cards in one map
     turnState: TurnState; // Turn Progression
+    logs: string[];
 
     // Master Data for Logic Resolution
     cardsMap: Record<string, UnifiedCard>;

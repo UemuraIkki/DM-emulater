@@ -1,218 +1,234 @@
-import { ZoneId } from '../../types/gameState';
-import type { GameState, CardState, PlayerId } from '../../types/gameState';
+import React from 'react';
+import { GameCard } from './GameCard';
+import { GameLog } from './GameLog';
+import type { GameState } from '../../types/gameState';
 import type { UnifiedCard } from '../../types/card-master';
+import { ZoneId } from '../../types/gameState';
 
 interface GameBoardProps {
     gameState: GameState;
-    playerId: PlayerId;
+    playerId: string;
     cardsMap: Record<string, UnifiedCard>;
-    onCardClick?: (cardId: string) => void;
-    onZoneClick?: (playerId: PlayerId, zone: ZoneId) => void;
-    selectedCardId?: string | null;
+    onCardClick: (cardId: string) => void;
+    onZoneClick: (playerId: string, zone: ZoneId) => void;
+    selectedCardId: string | null;
 }
 
-// Simple Card Component for Game Board
-const GameCard = ({
-    cardState,
-    cardData,
-    hidden,
+// Sub-component for Zone Buttons with Counters
+const ZoneButton = ({
+    label,
+    count,
     onClick,
-    isSelected
+    className
 }: {
-    cardState: CardState,
-    cardData?: UnifiedCard,
-    hidden?: boolean,
+    label: string,
+    count: number,
     onClick?: () => void,
-    isSelected?: boolean
-}) => {
-    if (hidden || cardState.faceDown) {
-        return (
-            <div
-                className={`w-12 h-16 md:w-16 md:h-24 bg-indigo-900 border-2 border-indigo-700 rounded shadow-sm flex items-center justify-center ${isSelected ? 'ring-2 ring-yellow-400' : ''}`}
-                onClick={onClick}
-            >
-                <div className="w-8 h-8 rounded-full bg-indigo-800 flex items-center justify-center">
-                    <div className="w-6 h-6 rounded-full border-2 border-indigo-600"></div>
-                </div>
-            </div>
-        );
-    }
-
-    if (!cardData) return <div className="w-12 h-16 md:w-16 md:h-24 bg-gray-200 rounded">?</div>;
-
-    return (
-        <div
-            className={`w-12 h-16 md:w-16 md:h-24 bg-white border border-gray-300 rounded shadow-sm flex flex-col items-center p-0.5 md:p-1 text-[8px] md:text-[10px] overflow-hidden relative select-none cursor-pointer transition-transform
-                ${cardState.tapped ? 'transform rotate-90 origin-center' : ''}
-                ${isSelected ? 'ring-2 ring-yellow-400 scale-105 z-10' : 'hover:scale-105'}
-            `}
-            title={cardData.name}
-            onClick={onClick}
-        >
-            <div className={`font-bold leading-tight text-center line-clamp-2 ${cardData.civilizations?.includes('FIRE') ? 'text-red-600' : cardData.civilizations?.includes('WATER') ? 'text-blue-600' : cardData.civilizations?.includes('NATURE') ? 'text-green-600' : cardData.civilizations?.includes('LIGHT') ? 'text-yellow-600' : cardData.civilizations?.includes('DARKNESS') ? 'text-slate-800' : 'text-gray-800'}`}>
-                {cardData.name}
-            </div>
-            <div className="mt-auto text-[8px] font-bold text-gray-400">{cardData.searchIndex.costs?.[0]}</div>
-            {cardData.subPart && <div className="mt-1 text-gray-500 text-[8px] border-t w-full text-center pt-0.5">{cardData.subPart.name}</div>}
-        </div>
-    );
-};
-
-// Zone Component
-const ZoneArea = ({ title, cards, className, onClick, isOpponent }: { title: string, cards: React.ReactNode, className?: string, onClick?: () => void, isOpponent?: boolean }) => (
-    <div
-        className={`border ${isOpponent ? 'border-red-200 bg-red-50/50' : 'border-slate-200 bg-slate-50/50'} rounded p-2 flex flex-col ${className} ${onClick ? 'cursor-pointer hover:bg-opacity-80' : ''} transition-colors relative`}
+    className?: string
+}) => (
+    <button
         onClick={onClick}
+        className={`relative flex items-center justify-center bg-slate-800/90 text-slate-300 border border-slate-600 rounded px-2 py-1 text-xs font-bold shadow hover:bg-slate-700 transition-colors ${className}`}
     >
-        <div className={`text-[10px] uppercase tracking-wider font-bold mb-1 ${isOpponent ? 'text-red-400' : 'text-slate-400'}`}>{title}</div>
-        <div className="flex-1 flex flex-wrap content-start gap-1 overflow-auto pointer-events-auto">
-            {cards}
-        </div>
-    </div>
+        {label}
+        <span className="ml-1.5 bg-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded-full min-w-[1.2em] text-center">
+            {count}
+        </span>
+    </button>
 );
 
-export const GameBoard = ({ gameState, playerId, cardsMap, onCardClick, onZoneClick, selectedCardId }: GameBoardProps) => {
-    // Helper to get cards in a zone
-    const getZoneCards = (pid: PlayerId, zone: ZoneId) => {
-        return Object.values(gameState.cards)
-            .filter(c => c.ownerId === pid && c.zone === zone)
-            .sort((a, b) => (a.stackOrder || 0) - (b.stackOrder || 0)); // Sort by stack order if relevant
-    };
-
-    const renderCards = (cards: CardState[], forceHidden = false) => {
-        return cards.map(c => (
+// Helper to render cards
+const renderCardList = (
+    cards: any[],
+    cardsMap: Record<string, UnifiedCard>,
+    onCardClick: (id: string) => void,
+    selectedCardId: string | null,
+    hidden: boolean = false,
+    rotation: string = '',
+    scale: boolean = true
+) => {
+    return cards.map((c, i) => (
+        <div key={c.id} className={`${rotation} ${scale ? 'transform transition-transform' : ''}`}>
             <GameCard
-                key={c.id}
                 cardState={c}
                 cardData={cardsMap[c.masterId]}
-                hidden={forceHidden}
-                onClick={() => onCardClick?.(c.id)}
+                hidden={hidden}
+                onClick={() => onCardClick(c.id)}
                 isSelected={selectedCardId === c.id}
             />
-        ));
-    };
+        </div>
+    ));
+};
 
-    // Assuming 2 players: Me and Opponent
-    const opponentId = Object.keys(gameState.players).find(id => id !== playerId) || 'opponent';
+const getZoneCards = (gameState: GameState, ownerId: string, zone: string) => {
+    return Object.values(gameState.cards)
+        .filter(c => c.ownerId === ownerId && c.zone === zone)
+        .sort((a, b) => (a.stackOrder || 0) - (b.stackOrder || 0));
+};
 
-    // My Zones
-    const myHand = getZoneCards(playerId, ZoneId.HAND);
-    const myMana = getZoneCards(playerId, ZoneId.MANA);
-    const myShields = getZoneCards(playerId, ZoneId.SHIELD);
-    const myBattleZone = getZoneCards(playerId, ZoneId.BATTLE_ZONE);
-    const myDeck = getZoneCards(playerId, ZoneId.DECK);
-    const myHyper = getZoneCards(playerId, ZoneId.HYPER_SPATIAL);
-    const myGraveyard = getZoneCards(playerId, ZoneId.GRAVEYARD);
+export const GameBoard: React.FC<GameBoardProps> = ({
+    gameState,
+    playerId,
+    cardsMap,
+    onCardClick,
+    onZoneClick,
+    selectedCardId
+}) => {
+    const opponentId = Object.keys(gameState.players).find(id => id !== playerId) || 'player2';
 
-    // Opponent Zones
-    const oppHand = getZoneCards(opponentId, ZoneId.HAND);
-    const oppMana = getZoneCards(opponentId, ZoneId.MANA);
-    const oppShields = getZoneCards(opponentId, ZoneId.SHIELD);
-    const oppBattleZone = getZoneCards(opponentId, ZoneId.BATTLE_ZONE);
-    const oppDeck = getZoneCards(opponentId, ZoneId.DECK);
-    const oppHyper = getZoneCards(opponentId, ZoneId.HYPER_SPATIAL);
-    const oppGraveyard = getZoneCards(opponentId, ZoneId.GRAVEYARD);
+    // Data Retrieval
+    const myHand = getZoneCards(gameState, playerId, ZoneId.HAND);
+    const myMana = getZoneCards(gameState, playerId, ZoneId.MANA);
+    const myShields = getZoneCards(gameState, playerId, ZoneId.SHIELD);
+    const myBattle = getZoneCards(gameState, playerId, ZoneId.BATTLE_ZONE);
+    const myGrave = getZoneCards(gameState, playerId, ZoneId.GRAVEYARD);
+    const myHyper = getZoneCards(gameState, playerId, ZoneId.HYPER_SPATIAL);
+    const myDeck = getZoneCards(gameState, playerId, ZoneId.DECK);
+
+    const opHand = getZoneCards(gameState, opponentId, ZoneId.HAND);
+    const opMana = getZoneCards(gameState, opponentId, ZoneId.MANA);
+    const opShields = getZoneCards(gameState, opponentId, ZoneId.SHIELD);
+    const opBattle = getZoneCards(gameState, opponentId, ZoneId.BATTLE_ZONE);
+    const opGrave = getZoneCards(gameState, opponentId, ZoneId.GRAVEYARD);
+    const opHyper = getZoneCards(gameState, opponentId, ZoneId.HYPER_SPATIAL);
+    const opDeck = getZoneCards(gameState, opponentId, ZoneId.DECK);
+
+    const myManaUntapped = myMana.filter(c => !c.tapped).length;
+    const opManaUntapped = opMana.filter(c => !c.tapped).length;
 
     return (
-        <div className="w-full h-full bg-slate-100 flex flex-col p-2 gap-2 overflow-hidden">
-            {/* Opponent Area (Rotated) */}
-            <div className="flex-[0.8] flex flex-col transform rotate-180 gap-2 mb-2 p-2 bg-red-50/20 rounded-lg border border-red-100 shadow-inner">
-                {/* Opponent's "Bottom" row (from their perspective) -> Top visually for us after rotation */}
-                <div className="flex-1 flex gap-2">
-                    <div className="w-1/4 flex flex-col gap-1">
-                        <ZoneArea
-                            title="Mana"
-                            cards={renderCards(oppMana, true)}  // Usually public, but maybe inverted for opponent view? Keep public for now.
-                            className="flex-1"
-                            isOpponent
-                            onClick={() => onZoneClick?.(opponentId, ZoneId.MANA)}
-                        />
-                        <ZoneArea
-                            title="Graveyard"
-                            cards={renderCards(oppGraveyard.slice(-1))}
-                            className="h-1/3"
-                            isOpponent
-                            onClick={() => onZoneClick?.(opponentId, ZoneId.GRAVEYARD)}
-                        />
+        <div className="w-full h-full bg-[#1a1c23] flex flex-col overflow-hidden relative select-none">
+            {/* --- GAME LOG OVERLAY --- */}
+            <GameLog logs={gameState.logs || []} />
+
+            {/* --- TOP AREA: OPPONENT (Fixed Rotation Container) --- */}
+            <div className="h-[43%] flex flex-col bg-red-900/5 relative border-b border-white/5">
+                {/* We rotate the CONTENT 180 deg to show it from opponent's perspective, but keep UI upright if we want? 
+                    Actually standard digital card games just show cards locally oriented but placed at top.
+                    User requested 180 deg. Let's wrap the logic or just rotate cards.
+                    If we rotate the whole container 180, bottom becomes top.
+                    
+                    Layout requested:
+                    Row 1 (Top): Grave, Hand, Mana
+                    Row 2: Shield
+                    Row 3: Battle
+                    
+                    If we rotate 180:
+                    The visual Bottom of this div becomes Top.
+                    So we stack: Battle -> Shield -> Mana/Hand/Grave
+                */}
+                <div className="flex-1 flex flex-col transform rotate-180 p-2">
+                    {/* Visual Top (Physical Bottom): Battle Zone */}
+                    <div className="flex-[2] flex justify-center items-center py-1 gap-2">
+                        {renderCardList(opBattle, cardsMap, onCardClick, selectedCardId)}
                     </div>
 
-                    <div className="flex-1 flex flex-col gap-2">
-                        <ZoneArea
-                            title="Shields"
-                            cards={renderCards(oppShields, true)}
-                            className="h-1/2 flex-row"
-                            isOpponent
-                        />
-                        {/* Hand is hidden for us */}
-                        <ZoneArea
-                            title="Hand"
-                            cards={renderCards(oppHand, true)} // Force Hidden
-                            className="h-1/2 flex-row"
-                            isOpponent
-                        />
+                    {/* Shield Zone */}
+                    <div className="h-20 flex justify-center items-center gap-1 my-1">
+                        {renderCardList(opShields, cardsMap, onCardClick, selectedCardId, true)}
                     </div>
 
-                    <div className="w-1/5 flex flex-col gap-1">
-                        <ZoneArea title="Deck" cards={<div className="text-xs text-center">{oppDeck.length}</div>} className="h-1/3" isOpponent />
-                        <ZoneArea
-                            title="Hyper Spatial"
-                            cards={renderCards(oppHyper, true)}
-                            className="flex-1"
-                            isOpponent
-                            onClick={() => onZoneClick?.(opponentId, ZoneId.HYPER_SPATIAL)}
-                        />
+                    {/* Resources: Mana, Hand, Grave */}
+                    <div className="flex-1 flex gap-2 items-start min-h-0">
+                        {/* Mana (Right in 180 view => Left in visual) */}
+                        <div className="flex-1 h-full bg-slate-800/30 rounded p-1 flex flex-wrap content-start transform rotate-180" style={{ alignContent: 'flex-start' }}>
+                            <div className="w-full text-[10px] text-slate-500 text-center mb-1">Mana {opManaUntapped}/{opMana.length}</div>
+                            {renderCardList(opMana, cardsMap, onCardClick, selectedCardId)}
+                        </div>
+
+                        {/* Hand (Center) */}
+                        <div className="flex-[2] h-full flex items-center justify-center bg-slate-900/20 rounded mx-1">
+                            <div className="transform rotate-180 text-slate-400 font-bold">
+                                Hand ({opHand.length})
+                            </div>
+                        </div>
+
+                        {/* Grave / Hyper / Deck (Left in 180 view => Right in visual) */}
+                        <div className="w-24 flex flex-col gap-1 transform rotate-180">
+                            <ZoneButton label="Deck" count={opDeck.length} className="flex-1 border-dashed opacity-50" />
+                            <ZoneButton label="Grave" count={opGrave.length} onClick={() => onZoneClick(opponentId, ZoneId.GRAVEYARD)} className="flex-1" />
+                            <ZoneButton label="Hyper" count={opHyper.length} onClick={() => onZoneClick(opponentId, ZoneId.HYPER_SPATIAL)} className="flex-1" />
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Battle Zone (Shared Center) */}
-            <div className="flex-1 bg-green-50/30 border border-green-100 rounded flex flex-col relative py-2">
-                <div className="text-xs text-green-800/50 absolute top-1 left-2 font-bold z-0 pointer-events-none">BATTLE ZONE</div>
-
-                {/* Opponent Creatures (Top of Battle Zone, Rotated) */}
-                <div className="flex-1 flex items-start justify-center px-4 transform rotate-180">
-                    {renderCards(oppBattleZone)}
+            {/* --- MIDDLE CENTER: INFO (Absolute Center) --- */}
+            {/* Phase Indicator, Turn Count etc. */}
+            <div className="absolute top-[43%] left-0 right-0 h-[14%] z-20 pointer-events-none flex items-center justify-center">
+                <div className="bg-black/40 backdrop-blur-sm px-8 py-2 rounded-full border border-white/10 flex flex-col items-center">
+                    <div className="text-xs text-slate-400 font-mono">TURN {gameState.turnState.turnNumber}</div>
+                    <div className="text-xl font-bold text-indigo-400 tracking-widest glow">
+                        {gameState.turnState.phase.replace('_', ' ')}
+                    </div>
+                    <div className={`text-[10px] font-bold mt-1 ${gameState.turnState.activePlayerId === playerId ? 'text-green-400' : 'text-red-400'}`}>
+                        {gameState.turnState.activePlayerId === playerId ? 'YOUR TURN' : 'OPPONENT TURN'}
+                    </div>
                 </div>
 
-                {/* My Creatures (Bottom of Battle Zone) */}
-                <div className="flex-1 flex items-end justify-center px-4">
-                    {renderCards(myBattleZone)}
-                </div>
+                {gameState.winner && (
+                    <div className="absolute inset-0 bg-black/60 z-50 flex items-center justify-center">
+                        <div className="text-5xl font-black text-white drop-shadow-[0_0_15px_rgba(255,215,0,0.8)] animate-pulse">
+                            {gameState.winner === playerId ? 'VICTORY' : 'DEFEAT'}
+                        </div>
+                    </div>
+                )}
             </div>
 
-            {/* My Player Area */}
-            <div className="flex-[0.8] flex gap-2 mt-2 p-2 bg-slate-50/50 rounded-lg border border-slate-200">
-                {/* Left Side: Mana & Graveyard */}
-                <div className="w-1/4 flex flex-col gap-1">
-                    <ZoneArea
-                        title="Mana"
-                        cards={renderCards(myMana)}
-                        className="flex-1"
-                        onClick={() => onZoneClick?.(playerId, ZoneId.MANA)}
-                    />
-                    <ZoneArea
-                        title="Graveyard"
-                        cards={renderCards(myGraveyard.slice(-1))} // Show top card only
-                        className="h-1/3"
-                        onClick={() => onZoneClick?.(playerId, ZoneId.GRAVEYARD)}
-                    />
+            {/* --- BOTTOM AREA: PLAYER --- */}
+            <div className="h-[57%] flex flex-col bg-slate-900/10 p-2 pb-0 pt-8 relative">
+                {/* Battle Zone */}
+                <div className="flex-[2] flex justify-center items-center py-2 gap-2 z-10">
+                    {myBattle.length === 0 && <div className="text-slate-700/20 font-bold text-5xl absolute select-none pointer-events-none">BATTLE ZONE</div>}
+                    {renderCardList(myBattle, cardsMap, onCardClick, selectedCardId)}
                 </div>
 
-                {/* Center: Shield & Hand */}
-                <div className="flex-1 flex flex-col gap-2">
-                    <ZoneArea title="Shields" cards={renderCards(myShields)} className="h-1/2 flex-row" />
-                    <ZoneArea title="Hand" cards={renderCards(myHand)} className="h-1/2 flex-row" />
+                {/* Shield Zone */}
+                <div className="h-24 flex justify-center items-center gap-2 my-1 z-10">
+                    {renderCardList(myShields, cardsMap, onCardClick, selectedCardId, true)}
                 </div>
 
-                {/* Right Side: Deck & Extra */}
-                <div className="w-1/5 flex flex-col gap-1">
-                    <ZoneArea title="Deck" cards={<div className="text-xs text-center">{myDeck.length}</div>} className="h-1/3" />
-                    <ZoneArea
-                        title="Hyper Spatial"
-                        cards={renderCards(myHyper)}
-                        className="flex-1"
-                        onClick={() => onZoneClick?.(playerId, ZoneId.HYPER_SPATIAL)}
-                    />
+                {/* Resources: Mana, Hand, Grave */}
+                {/* We use flex-end to push Hand to bottom */}
+                <div className="flex-[2] flex gap-2 items-end min-h-0 pb-2">
+                    {/* Left: Deck / Grave / Hyper */}
+                    <div className="w-24 flex flex-col gap-1 h-32 justify-end mb-1 z-20">
+                        <ZoneButton label="Deck" count={myDeck.length} className="flex-1 border-dashed opacity-50 hover:opacity-100" />
+                        <ZoneButton label="Grave" count={myGrave.length} onClick={() => onZoneClick(playerId, ZoneId.GRAVEYARD)} className="flex-1 bg-slate-800" />
+                        <ZoneButton label="Hyper" count={myHyper.length} onClick={() => onZoneClick(playerId, ZoneId.HYPER_SPATIAL)} className="flex-1 bg-indigo-900" />
+                    </div>
+
+                    {/* Left-Center: Mana Zone (Rotated 180) */}
+                    <div className="w-40 h-40 bg-slate-800/40 rounded border border-slate-700/30 p-1 flex flex-wrap content-start items-start gap-1 overflow-visible transform rotate-180 hover:z-30 transition-all hover:bg-slate-800">
+                        {/* Counter (Correctly oriented relative to player?) No, it's inside 180 div. 
+                             If we want text readable, we un-rotate it. */}
+                        <div className="w-full text-[10px] text-slate-400 text-center mb-1 transform rotate-180">Mana {myManaUntapped}/{myMana.length}</div>
+                        {renderCardList(myMana, cardsMap, onCardClick, selectedCardId, false, 'transform rotate-180')}
+                    </div>
+
+                    {/* Center-Right: Hand (Expanded) */}
+                    <div className="flex-1 h-32 relative z-30">
+                        <div className="absolute inset-x-0 bottom-[-10px] h-40 flex justify-center items-end gap-[-50px] px-8 hover:gap-[-10px] transition-all">
+                            {/* Overlapping Cards */}
+                            <div className="flex justify-center items-end -space-x-8 hover:-space-x-2 transition-all duration-300 w-full px-10">
+                                {myHand.map((c, i) => (
+                                    <div
+                                        key={c.id}
+                                        className="relative transform hover:-translate-y-8 hover:scale-110 hover:z-50 transition-all duration-200 cursor-pointer origin-bottom"
+                                        style={{ marginBottom: i % 2 === 0 ? '0px' : '4px' }} // Slight fan effect zigzag
+                                    >
+                                        <GameCard
+                                            cardState={c}
+                                            cardData={cardsMap[c.masterId]}
+                                            onClick={() => onCardClick(c.id)}
+                                            isSelected={selectedCardId === c.id}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="absolute top-0 right-0 bg-black/50 text-white text-xs px-2 rounded-bl">Hand: {myHand.length}</div>
+                    </div>
                 </div>
             </div>
         </div>
