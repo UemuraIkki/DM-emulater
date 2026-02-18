@@ -178,8 +178,13 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             {/* --- BOTTOM AREA: PLAYER --- */}
             <div className="h-[57%] flex flex-col bg-slate-900/10 p-2 pb-0 pt-8 relative">
                 {/* Row 1: Battle Zone */}
-                <div className="flex-[2] flex justify-center items-center py-2 gap-2 z-10">
-                    {myBattle.length === 0 && <div className="text-slate-700/20 font-bold text-5xl absolute select-none pointer-events-none">BATTLE ZONE</div>}
+                <div className="flex-[2] flex justify-center items-center py-2 gap-2 z-10 min-h-[150px] border-b border-white/5 bg-black/10">
+                    {/* Placeholder Text if Empty */}
+                    {myBattle.length === 0 && (
+                        <div className="text-slate-700/30 font-bold text-4xl absolute select-none pointer-events-none">
+                            BATTLE ZONE
+                        </div>
+                    )}
                     {renderCardList(myBattle, cardsMap, onCardClick, selectedCardId)}
                 </div>
 

@@ -24,7 +24,11 @@ export type GameAction =
 
 export const gameReducer = (state: GameState | null, action: GameAction): GameState | null => {
     if (action.type === 'INITIALIZE_GAME') {
-        return checkStateBasedActions(action.payload);
+        const initializedState = checkStateBasedActions(action.payload);
+        return {
+            ...initializedState,
+            chatMessages: action.payload.chatMessages || []
+        };
     }
 
     if (!state) return null;

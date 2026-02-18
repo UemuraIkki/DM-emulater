@@ -115,11 +115,7 @@ const BattleRoom = () => {
             )}
 
             {/* General Game Controls (Phases etc) */}
-            <div className="absolute bottom-4 right-4 z-40 hidden">
-                {/* Explicitly hidden or removed if we drift away from auto-turn structure? 
-                     For Manual Mode, we might still want Next Phase to track turn counts.
-                     Let's keep it but maybe minimize it. 
-                 */}
+            <div className="fixed bottom-0 right-72 z-[80] w-auto p-2">
                 <GameControls
                     gameState={gameState}
                     playerId="player1"

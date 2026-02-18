@@ -27,11 +27,15 @@ export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, card
             <div className="bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-[90%] max-w-sm overflow-hidden flex" onClick={e => e.stopPropagation()}>
 
                 {/* Left: Card Preview (Mini) */}
-                <div className="w-1/3 bg-black/30 p-2 flex items-center justify-center border-r border-slate-700">
+                <div className="w-1/3 bg-black/30 p-2 flex flex-col items-center border-r border-slate-700 overflow-y-auto">
                     {/* Placeholder for Card Image if available, else Name */}
-                    <div className="text-center">
+                    <div className="text-center mb-2">
                         <div className="text-[10px] text-slate-500 mb-1">{card.id}</div>
                         <div className="font-bold text-slate-200 text-sm">{card.name}</div>
+                    </div>
+                    {/* Card Text */}
+                    <div className="text-[10px] text-slate-300 leading-tight whitespace-pre-wrap text-left w-full px-1">
+                        {card.text || "No text available."}
                     </div>
                 </div>
 
