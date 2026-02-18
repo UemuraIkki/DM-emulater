@@ -85,6 +85,9 @@ export interface CardState {
 
     // 804. God Link / 812. Zeroryu
     linkedCardIds: string[]; // リンクしている相方のIDリスト
+
+    // Power Modifier (for Manual Mode)
+    powerModifier: number;
 }
 
 /**

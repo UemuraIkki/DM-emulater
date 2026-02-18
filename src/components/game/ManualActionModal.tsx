@@ -7,7 +7,7 @@ interface ManualActionModalProps {
     cardId: string; // Instance ID
     currentZone: ZoneId;
     onClose: () => void;
-    onAction: (targetZone: ZoneId, options?: { tapped?: boolean, faceDown?: boolean, executionMessage?: string }) => void;
+    onAction: (targetZone: ZoneId, options?: { tapped?: boolean, faceDown?: boolean, executionMessage?: string, amount?: number }) => void;
 }
 
 export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, cardId, currentZone, onClose, onAction }) => {
@@ -81,6 +81,21 @@ export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, card
                             <div className="grid grid-cols-2 gap-1">
                                 <ActionButton label="Shield (Top)" zone={ZoneId.SHIELD} options={{ faceDown: true }} className="bg-yellow-900/40 text-yellow-200" />
                                 <ActionButton label="Deck Top" zone={ZoneId.DECK} options={{ faceDown: true }} className="bg-slate-700 text-slate-300" />
+                                <ActionButton label="Hyper Spatial" zone={ZoneId.HYPER_SPATIAL} className="bg-indigo-900 text-indigo-200" />
+                            </div>
+                        </div>
+
+                        {/* State Control */}
+                        <div className="space-y-1 border-t border-slate-700 pt-1">
+                            <div className="text-[10px] text-indigo-400 uppercase font-bold tracking-wider">Status Modifier</div>
+                            <div className="grid grid-cols-2 gap-1">
+                                <button onClick={() => onAction('TOGGLE_TAP' as ZoneId)} className="w-full text-center px-2 py-1 bg-slate-600 text-xs font-bold rounded">Tap / Untap</button>
+                                <button onClick={() => onAction('RESET_CARD' as ZoneId)} className="w-full text-center px-2 py-1 bg-red-800 text-xs font-bold rounded">Reset Status</button>
+                            </div>
+                            <div className="grid grid-cols-3 gap-1">
+                                <button onClick={() => onAction('MODIFY_POWER' as ZoneId, { amount: 1000 })} className="bg-green-800 text-[10px] font-bold py-1 rounded">+1000</button>
+                                <button onClick={() => onAction('MODIFY_POWER' as ZoneId, { amount: 5000 })} className="bg-green-700 text-[10px] font-bold py-1 rounded">+5000</button>
+                                <button onClick={() => onAction('MODIFY_POWER' as ZoneId, { amount: -5000 })} className="bg-red-900 text-[10px] font-bold py-1 rounded">-5000</button>
                             </div>
                         </div>
                     </div>

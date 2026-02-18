@@ -23,6 +23,9 @@ export type GameAction =
     | { type: 'UNDO' }
     | { type: 'SEND_MESSAGE'; payload: { senderId: string; text: string } }
     | { type: 'MANUAL_MOVE_CARD'; payload: { cardId: string; toZone: ZoneId; options?: { tapped?: boolean; faceDown?: boolean; executionMessage?: string } } }
+    | { type: 'TOGGLE_TAP'; payload: { cardId: string } }
+    | { type: 'MODIFY_POWER'; payload: { cardId: string; amount: number } }
+    | { type: 'RESET_CARD'; payload: { cardId: string } }
     | { type: 'LOSE_GAME'; payload: { playerId: string } };
 
 export const gameReducer = (state: GameState | null, action: GameAction): GameState | null => {
@@ -264,6 +267,60 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
 
         case 'BREAK_SHIELD': {
             newState = breakShield(state, action.payload.cardId);
+            break;
+        }
+
+        case 'TOGGLE_TAP': {
+            const card = state.cards[action.payload.cardId];
+            if (card) {
+                newState = {
+                    ...state,
+                    cards: {
+                        ...state.cards,
+                        [card.id]: {
+                            ...card,
+                            tapped: !card.tapped
+                        }
+                    }
+                };
+            }
+            break;
+        }
+
+        case 'MODIFY_POWER': {
+            const card = state.cards[action.payload.cardId];
+            if (card) {
+                const currentMod = card.powerModifier || 0;
+                newState = {
+                    ...state,
+                    cards: {
+                        ...state.cards,
+                        [card.id]: {
+                            ...card,
+                            powerModifier: currentMod + action.payload.amount
+                        }
+                    }
+                };
+            }
+            break;
+        }
+
+        case 'RESET_CARD': {
+            const card = state.cards[action.payload.cardId];
+            if (card) {
+                newState = {
+                    ...state,
+                    cards: {
+                        ...state.cards,
+                        [card.id]: {
+                            ...card,
+                            tapped: false,
+                            powerModifier: 0,
+                            hasSummoningSickness: false // Optional: Clear sickness too?
+                        }
+                    }
+                };
+            }
             break;
         }
 

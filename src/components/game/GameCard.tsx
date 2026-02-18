@@ -89,7 +89,16 @@ export const GameCard: React.FC<GameCardProps> = ({
             <div className={`font-bold leading-tight text-center line-clamp-2 ${getCivColorClass(cardData)}`}>
                 {cardData.name}
             </div>
-            <div className="mt-auto text-[8px] font-bold text-gray-400">{cardData.searchIndex.costs?.[0]}</div>
+            <div className="mt-auto flex justify-between items-end w-full px-0.5">
+                <div className="text-[8px] font-bold text-gray-400">{cardData.searchIndex.costs?.[0]}</div>
+                {(cardData.searchIndex.power?.[0] || (cardState.powerModifier && cardState.powerModifier !== 0)) && (
+                    <div className={`text-[8px] font-bold ${(cardState.powerModifier || 0) > 0 ? 'text-red-500' :
+                        (cardState.powerModifier || 0) < 0 ? 'text-blue-500' : 'text-slate-500'
+                        }`}>
+                        {((cardData.searchIndex.power?.[0] || 0) + (cardState.powerModifier || 0))}
+                    </div>
+                )}
+            </div>
             {cardData.subPart && <div className="mt-1 text-gray-500 text-[8px] border-t w-full text-center pt-0.5">{cardData.subPart.name}</div>}
         </div>
     );

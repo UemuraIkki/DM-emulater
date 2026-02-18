@@ -5,6 +5,13 @@ import { useState } from 'react';
 
 // ... (ZoneButton, renderCardList, getZoneCards remain the same)
 
+// Helper function to fix ReferenceError
+const getZoneCards = (gameState: GameState, ownerId: string, zone: string) => {
+    return Object.values(gameState.cards)
+        .filter(c => c.ownerId === ownerId && c.zone === zone)
+        .sort((a, b) => (a.stackOrder || 0) - (b.stackOrder || 0));
+};
+
 export const GameBoard: React.FC<GameBoardProps> = ({
     gameState,
     playerId,
@@ -55,11 +62,20 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                     cards={viewingZone.cards}
                     onClose={() => setViewingZone(null)}
                     onCardClick={(card) => {
-                        onCardClick(card.id); // Or detailed view? Default to select.
-                        setViewingZone(null); // Close on select? Or keep open? Let's close for now to perform action.
+                        onCardClick(card.id);
+                        setViewingZone(null);
                     }}
                 />
             )}
+
+            {/* Manual Action Modal (Global) - Handled separately or via selected state? 
+                Wait, currently ManualActionModal is instantiated where? 
+                Ah, it seems it WAS in BattleRoom.tsx, but checks selectedCardId.
+                Let's double check BattleRoom. 
+                Wait, GameBoard props don't have onManualAction or similar.
+                The prompt asked to "Click Handlers" to Open Modal.
+                Checking BattleRoom...
+            */}
 
             {/* --- GAME LOG OVERLAY --- */}
             <GameLog logs={gameState.logs || []} />

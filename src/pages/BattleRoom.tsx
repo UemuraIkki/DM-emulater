@@ -54,12 +54,30 @@ const BattleRoom = () => {
     };
 
     // Manual Action
-    const handleManualAction = (targetZone: ZoneId, options?: any) => {
+    // Manual Action
+    const handleManualAction = (actionType: any, options?: any) => {
         if (!selectedCardId) return;
-        dispatch({
-            type: 'MANUAL_MOVE_CARD',
-            payload: { cardId: selectedCardId, toZone: targetZone, options }
-        });
+
+        // Determine Action Type
+        // If actionType is a ZoneId, it's a move.
+        // If it's a string like "TOGGLE_TAP", it's a direct action.
+
+        // Simple heuristic: specific action strings vs ZoneId strings
+        const isDirectAction = ['TOGGLE_TAP', 'MODIFY_POWER', 'RESET_CARD'].includes(actionType);
+
+        if (isDirectAction) {
+            dispatch({
+                type: actionType,
+                payload: { cardId: selectedCardId, ...options }
+            });
+        } else {
+            // Assume Zone Move
+            dispatch({
+                type: 'MANUAL_MOVE_CARD',
+                payload: { cardId: selectedCardId, toZone: actionType, options }
+            });
+        }
+
         setSelectedCardId(null);
     };
 
