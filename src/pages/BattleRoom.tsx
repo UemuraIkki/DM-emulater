@@ -133,7 +133,7 @@ const BattleRoom = () => {
             )}
 
             {/* General Game Controls (Phases etc) */}
-            <div className="fixed bottom-0 right-72 z-[80] w-auto p-2">
+            <div className="fixed top-1/2 right-4 transform -translate-y-1/2 z-[80] w-auto p-2">
                 <GameControls
                     gameState={gameState}
                     playerId="player1"
