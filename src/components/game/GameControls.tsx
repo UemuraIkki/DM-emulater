@@ -1,15 +1,15 @@
 import React from 'react';
 import type { GameState, PlayerId } from '../../types/gameState';
 import type { GameAction } from '../../logic/gameReducer';
-import { Phase } from '../../types/gamePhase';
 
 interface GameControlsProps {
     gameState: GameState;
     playerId: PlayerId;
     dispatch: React.Dispatch<GameAction>;
+    onToggleLogs: () => void;
 }
 
-export const GameControls: React.FC<GameControlsProps> = ({ gameState, playerId, dispatch }) => {
+export const GameControls: React.FC<GameControlsProps> = ({ gameState, playerId, dispatch, onToggleLogs }) => {
     const { turnState } = gameState;
     const isMyTurn = turnState.activePlayerId === playerId;
 
@@ -57,6 +57,14 @@ export const GameControls: React.FC<GameControlsProps> = ({ gameState, playerId,
                     UNDO
                 </button>
             </div>
+
+            {/* Logs Button */}
+            <button
+                onClick={onToggleLogs}
+                className="w-full bg-slate-700 hover:bg-slate-600 text-xs py-1 rounded text-slate-300 border border-slate-600 mt-1"
+            >
+                📜 View Logs
+            </button>
 
             {/* Surrender Button */}
             <div className="mt-2 text-center">

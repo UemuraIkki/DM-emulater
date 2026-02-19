@@ -118,6 +118,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                     cards={viewingZone.cards}
                     cardsMap={cardsMap}
                     onClose={() => setViewingZone(null)}
+                    onCardClick={onCardClick}
                 />
             )}
 

@@ -10,7 +10,9 @@ import { normalizeCards } from '../utils/cardProcessor';
 import type { UnifiedCard } from '../types/card-master';
 import type { CardData } from '../types';
 import type { Deck } from '../utils/deckStorage';
-import type { ZoneId } from '../types/gameState';
+// import type { ZoneId } from '../types/gameState';
+
+import { GameLogModal } from '../components/game/GameLogModal';
 
 const BattleRoom = () => {
     const [gameStarted, setGameStarted] = useState(false);
@@ -18,6 +20,7 @@ const BattleRoom = () => {
     const [cardsMap, setCardsMap] = useState<Record<string, UnifiedCard>>({});
     const [loadingCards, setLoadingCards] = useState(true);
     const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+    const [showLogs, setShowLogs] = useState(false);
 
     // Initialize Cards Data
     useEffect(() => {
@@ -136,12 +139,21 @@ const BattleRoom = () => {
                 />
             )}
 
+            {/* Game Log Modal */}
+            {showLogs && (
+                <GameLogModal
+                    logs={gameState.logs || []}
+                    onClose={() => setShowLogs(false)}
+                />
+            )}
+
             {/* General Game Controls (Phases etc) */}
             <div className="fixed top-1/2 right-4 transform -translate-y-1/2 z-[80] w-auto p-2">
                 <GameControls
                     gameState={gameState}
                     playerId="player1"
                     dispatch={dispatch}
+                    onToggleLogs={() => setShowLogs(prev => !prev)}
                 />
             </div>
         </div>

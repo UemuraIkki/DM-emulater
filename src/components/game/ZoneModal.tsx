@@ -7,9 +7,10 @@ interface ZoneModalProps {
     cards: CardState[];
     cardsMap: Record<string, UnifiedCard>;
     onClose: () => void;
+    onCardClick: (cardId: string) => void;
 }
 
-export const ZoneModal: React.FC<ZoneModalProps> = ({ title, cards, cardsMap, onClose }) => {
+export const ZoneModal: React.FC<ZoneModalProps> = ({ title, cards, cardsMap, onClose, onCardClick }) => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-lg shadow-2xl w-3/4 h-3/4 flex flex-col overflow-hidden relative border border-slate-300">
@@ -31,7 +32,15 @@ export const ZoneModal: React.FC<ZoneModalProps> = ({ title, cards, cardsMap, on
                             const master = cardsMap[card.masterId];
                             return (
                                 <div key={card.id} className="aspect-[2/3] relative group">
-                                    <div className="absolute inset-0 bg-white rounded border border-slate-300 shadow-sm flex flex-col items-center justify-center p-1 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all">
+                                    <div
+                                        className="absolute inset-0 bg-white rounded border border-slate-300 shadow-sm flex flex-col items-center justify-center p-1 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            console.log(`[ZoneModal] Clicked card ${card.id}`);
+                                            onClose(); // Close zone modal to focus on action
+                                            onCardClick(card.id);
+                                        }}
+                                    >
                                         {/* Simple visualization for now, matches GameBoard card style */}
                                         <div className="font-bold text-[10px] text-center line-clamp-2">{master?.name || 'Unknown'}</div>
                                         <div className="mt-auto text-[8px] font-bold text-gray-400">{master?.searchIndex?.costs?.[0]}</div>

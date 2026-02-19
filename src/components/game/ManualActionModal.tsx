@@ -34,26 +34,46 @@ export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, card
                     {/* Placeholder for Card Image if available, else Name */}
                     <div className="text-center mb-2 w-full">
                         <div className="text-[10px] text-slate-500 mb-1">{card.id}</div>
-                        <div className="font-bold text-slate-200 text-sm mb-1">{card.name || "Unknown Name"}</div>
-
-                        <div className="text-[10px] text-slate-400">
-                            {/* Safe Fallback Display */}
-                            <div>Cost: {card.sides?.[0]?.cost ?? card.mainPart?.cost ?? "N/A"}</div>
-                            <div>Civ: {card.sides?.[0]?.civilizations?.join('/') ?? card.mainPart?.civilization ?? "N/A"}</div>
-                        </div>
-                        <div className="text-[10px] text-slate-400 mb-1">
-                            {card.sides?.[0]?.races?.join(' / ') ?? card.mainPart?.race ?? ""}
-                        </div>
-
-                        {(card.sides?.[0]?.power !== undefined || card.mainPart?.power) && (
-                            <div className="text-xs font-bold text-yellow-500">
-                                Power: {card.sides?.[0]?.power ?? card.mainPart?.power ?? "N/A"}
+                        {/* Multi-sided Render */}
+                        {card.sides && card.sides.length > 0 ? (
+                            <div className="flex flex-col gap-4">
+                                {card.sides.map((side, idx) => (
+                                    <div key={idx} className="border-b border-slate-600 pb-2 last:border-0">
+                                        <div className="font-bold text-slate-200 text-sm mb-1">{side.name}</div>
+                                        <div className="text-[10px] text-slate-400">
+                                            <div>Cost: {side.cost}</div>
+                                            <div>Civ: {side.civilizations?.join('/') ?? "N/A"}</div>
+                                            <div>Type: {side.type}</div>
+                                        </div>
+                                        {side.power !== undefined && (
+                                            <div className="text-xs font-bold text-yellow-500">
+                                                Power: {side.power}
+                                            </div>
+                                        )}
+                                        <div className="text-[10px] text-slate-300 leading-tight whitespace-pre-wrap text-left w-full mt-1">
+                                            {side.text || "No abilities found."}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
+                        ) : (
+                            /* Fallback for Single Side (should rarely happen if normalizeCards works, but good safety) */
+                            <>
+                                <div className="font-bold text-slate-200 text-sm mb-1">{card.name || "Unknown Name"}</div>
+                                <div className="text-[10px] text-slate-400">
+                                    <div>Cost: {card.mainPart?.cost ?? "N/A"}</div>
+                                    <div>Civ: {card.mainPart?.civilization ?? "N/A"}</div>
+                                </div>
+                                {(card.mainPart?.power) && (
+                                    <div className="text-xs font-bold text-yellow-500">
+                                        Power: {card.mainPart?.power}
+                                    </div>
+                                )}
+                                <div className="text-[10px] text-slate-300 leading-tight whitespace-pre-wrap text-left w-full px-1 border-t border-slate-700 pt-2 mt-2">
+                                    {card.mainPart?.text || "No abilities found."}
+                                </div>
+                            </>
                         )}
-                    </div>
-                    {/* Card Text */}
-                    <div className="text-[10px] text-slate-300 leading-tight whitespace-pre-wrap text-left w-full px-1 border-t border-slate-700 pt-2 mt-2 h-full overflow-y-auto">
-                        {card.sides?.[0]?.text || card.mainPart?.text || "No abilities found."}
                     </div>
                 </div>
 
