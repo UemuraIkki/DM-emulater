@@ -22,6 +22,9 @@ export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, card
         </button>
     );
 
+    // === DEBUG: Force Console Logging of Raw Data ===
+    console.log("=== INSPECTING CARD DATA ===", card);
+
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-[1px]" onClick={onClose}>
             <div className="bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-[90%] max-w-sm overflow-hidden flex" onClick={e => e.stopPropagation()}>
@@ -29,13 +32,28 @@ export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, card
                 {/* Left: Card Preview (Mini) */}
                 <div className="w-1/3 bg-black/30 p-2 flex flex-col items-center border-r border-slate-700 overflow-y-auto">
                     {/* Placeholder for Card Image if available, else Name */}
-                    <div className="text-center mb-2">
+                    <div className="text-center mb-2 w-full">
                         <div className="text-[10px] text-slate-500 mb-1">{card.id}</div>
-                        <div className="font-bold text-slate-200 text-sm">{card.name}</div>
+                        <div className="font-bold text-slate-200 text-sm mb-1">{card.name || "Unknown Name"}</div>
+
+                        <div className="text-[10px] text-slate-400">
+                            {/* Safe Fallback Display */}
+                            <div>Cost: {card.sides?.[0]?.cost ?? card.mainPart?.cost ?? "N/A"}</div>
+                            <div>Civ: {card.sides?.[0]?.civilizations?.join('/') ?? card.mainPart?.civilization ?? "N/A"}</div>
+                        </div>
+                        <div className="text-[10px] text-slate-400 mb-1">
+                            {card.sides?.[0]?.races?.join(' / ') ?? card.mainPart?.race ?? ""}
+                        </div>
+
+                        {(card.sides?.[0]?.power !== undefined || card.mainPart?.power) && (
+                            <div className="text-xs font-bold text-yellow-500">
+                                Power: {card.sides?.[0]?.power ?? card.mainPart?.power ?? "N/A"}
+                            </div>
+                        )}
                     </div>
                     {/* Card Text */}
-                    <div className="text-[10px] text-slate-300 leading-tight whitespace-pre-wrap text-left w-full px-1 border-t border-slate-700 pt-2 mt-2">
-                        {card.text || "No abilities."}
+                    <div className="text-[10px] text-slate-300 leading-tight whitespace-pre-wrap text-left w-full px-1 border-t border-slate-700 pt-2 mt-2 h-full overflow-y-auto">
+                        {card.sides?.[0]?.text || card.mainPart?.text || "No abilities found."}
                     </div>
                 </div>
 
@@ -47,6 +65,19 @@ export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, card
                     </div>
 
                     <div className="p-2 space-y-3">
+                        {/* Special Context Actions */}
+                        {currentZone === ZoneId.HYPER_SPATIAL && (
+                            <div className="space-y-1 mb-2">
+                                <div className="text-[10px] text-indigo-400 uppercase font-bold tracking-wider">Hyper Spatial</div>
+                                <ActionButton
+                                    label="To Battle Zone (Force)"
+                                    zone={ZoneId.BATTLE_ZONE}
+                                    options={{ executionMessage: 'Called from Hyper Spatial', force: true }}
+                                    className="bg-indigo-600 hover:bg-indigo-500 text-white w-full py-3 font-bold shadow-lg shadow-indigo-500/20"
+                                />
+                            </div>
+                        )}
+
                         {/* Battle Zone Operations */}
                         <div className="space-y-1">
                             <div className="text-[10px] text-indigo-400 uppercase font-bold tracking-wider">Battle Zone</div>

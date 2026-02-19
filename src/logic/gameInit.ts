@@ -5,7 +5,7 @@ import type { Deck } from '../utils/deckStorage';
 import type { UnifiedCard } from '../types/card-master';
 import { SpecialType, CardType } from '../types/card-master';
 import { Phase, AttackStep } from '../types/gamePhase';
-import { getZone } from '../hooks/useDeckValidation'; // Helper to determine zone
+import { getZone } from '../hooks/useDeckValidation';
 
 // Simple UUID generator if uuid package not available (likely valid for this env)
 const generateId = (): string => {
@@ -61,13 +61,17 @@ const createCardState = (
         isFlipped: false,
 
         // 804. God Link / 812. Zeroryu
-        linkedCardIds: []
+        linkedCardIds: [],
+
+        // Power Modifier
+        powerModifier: 0
     };
 };
 
 
 export const initializeGame = (
     userDeck: Deck,
+    masterMap: Record<string, UnifiedCard>, // Require Master Map for full hydration
     userPlayerId: PlayerId = 'player1',
     opponentPlayerId: PlayerId = 'player2'
 ): GameState => {
@@ -83,7 +87,11 @@ export const initializeGame = (
     const gameStartBattleCards: UnifiedCard[] = [];
     const externalCards: UnifiedCard[] = [];
 
-    userDeck.cards.forEach(card => {
+    userDeck.cards.forEach(deckCard => {
+        // Hydrate from Master Map if possible to ensure we have latest Logic/Power/Text
+        // userDeck might contain stale data from database
+        const card = masterMap[deckCard.id] || deckCard;
+
         // Check for Game Start cards first
         if (card.startsInBattleZone) {
             gameStartBattleCards.push(card);
@@ -92,11 +100,6 @@ export const initializeGame = (
 
         // Zone based on type
         const zoneType = getZone(card);
-
-        // External? (Zeroryu, Dolmadgeddon) 
-        // getZone might return 'external' or 'main' depending on implementation.
-        // Let's rely on cardType checks from previous task if getZone is insufficient, 
-        // but current getZone logic handles 'external'.
 
         if (card.cardType === SpecialType.ZERORYU_PART || card.cardType === SpecialType.DOLMADGEDDON_PART) {
             externalCards.push(card);
@@ -198,17 +201,45 @@ export const initializeGame = (
     };
 
     // Create Master Map
-    const cardsMap: Record<string, UnifiedCard> = {};
-    userDeck.cards.forEach(c => {
-        cardsMap[c.id] = c;
+    const gameCardsMap: Record<string, UnifiedCard> = {};
+    Object.values(cards).forEach(cState => {
+        if (masterMap[cState.masterId]) {
+            gameCardsMap[cState.masterId] = masterMap[cState.masterId];
+        } else {
+            // Check if it was in the deck but not masterMap?
+            // Already handled in hydration step, card was used.
+            // If fallback was used, we should add it here too.
+            // We can find the master card from the source deck list iteration if we saved it?
+            // But we only have `cards`.
+            // Ideally `masterMap` is complete.
+        }
+    });
+    // Ensure all used cards are in gameCardsMap.
+    // We can iterate cards again.
+
+    // Better: We hydrated `card` in the loop. We should add THAT to gameCardsMap.
+    // Re-iterating userCards is enough if we can lookup source? 
+    // No, `c.masterId` is just ID.
+    // Let's rely on `masterMap` being complete for now, or the hydration usage.
+    // Actually, `initializeGame` loop creates `userCards`. 
+
+    // Let's populate gameCardsMap inside the initial loop to be safe?
+    // Or just copy `masterMap`? Copying entire masterMap (4000 cards) into GameState is bad for performance/memory?
+    // Previous implementation copied `userDeck.cards`.
+
+    userDeck.cards.forEach(deckCard => {
+        const card = masterMap[deckCard.id] || deckCard;
+        gameCardsMap[card.id] = card;
     });
 
     return {
         players,
         cards,
-        cardsMap,
+        cardsMap: gameCardsMap,
         turnState,
         pendingEffects: [],
-        continuousEffects: []
+        continuousEffects: [],
+        logs: [],
+        chatMessages: []
     };
 };

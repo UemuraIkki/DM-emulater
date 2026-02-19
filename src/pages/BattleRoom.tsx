@@ -39,7 +39,11 @@ const BattleRoom = () => {
     }, []);
 
     const handleDeckSelect = (deck: Deck) => {
-        const initialState = initializeGame(deck, 'player1', 'player2');
+        if (loadingCards) {
+            console.warn("Cards still loading, cannot initialize game safely.");
+            return;
+        }
+        const initialState = initializeGame(deck, cardsMap, 'player1', 'player2');
         dispatch({ type: 'INITIALIZE_GAME', payload: initialState });
         setGameStarted(true);
     };

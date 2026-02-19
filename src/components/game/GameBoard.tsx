@@ -177,20 +177,21 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             </div>
 
             {/* ═══ MIDDLE CENTER: Phase / Turn Info ═══ */}
-            <div className="absolute top-[43%] left-0 right-0 h-[14%] z-20 pointer-events-none flex items-center justify-center">
-                <div className="bg-black/40 backdrop-blur-sm px-8 py-2 rounded-full border border-white/10 flex flex-col items-center">
-                    <div className="text-xs text-slate-400 font-mono">TURN {gameState.turnState.turnNumber}</div>
-                    <div className="text-xl font-bold text-indigo-400 tracking-widest glow">
+            {/* ═══ MIDDLE LEFT: Phase / Turn Info ═══ */}
+            <div className="absolute top-[43%] left-4 h-[14%] z-20 pointer-events-none flex items-center justify-start">
+                <div className="bg-black/60 backdrop-blur-md px-6 py-3 rounded-lg border border-white/10 flex flex-col items-start shadow-xl">
+                    <div className="text-xs text-slate-400 font-mono tracking-widest mb-1">TURN {gameState.turnState.turnNumber}</div>
+                    <div className="text-2xl font-black text-indigo-400 tracking-widest glow uppercase" style={{ textShadow: '0 0 10px rgba(99, 102, 241, 0.5)' }}>
                         {gameState.turnState.phase ? String(gameState.turnState.phase).replace('_', ' ') : 'START'}
                     </div>
-                    <div className={`text-[10px] font-bold mt-1 ${gameState.turnState.activePlayerId === playerId ? 'text-green-400' : 'text-red-400'}`}>
+                    <div className={`text-[10px] font-bold mt-1 px-2 py-0.5 rounded ${gameState.turnState.activePlayerId === playerId ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
                         {gameState.turnState.activePlayerId === playerId ? 'YOUR TURN' : 'OPPONENT TURN'}
                     </div>
                 </div>
 
                 {gameState.winner && (
-                    <div className="absolute inset-0 bg-black/60 z-50 flex items-center justify-center pointer-events-auto">
-                        <div className="text-5xl font-black text-white drop-shadow-[0_0_15px_rgba(255,215,0,0.8)] animate-pulse">
+                    <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center pointer-events-auto backdrop-blur-sm">
+                        <div className="text-6xl font-black text-white drop-shadow-[0_0_25px_rgba(255,215,0,0.8)] animate-bounce">
                             {gameState.winner === playerId ? 'VICTORY' : 'DEFEAT'}
                         </div>
                     </div>

@@ -7,24 +7,40 @@ import { moveCard } from './zoneMovement';
  */
 export const startTurn = (state: GameState): GameState => {
     const activePlayerId = state.turnState.activePlayerId;
-    const newState: GameState = {
-        ...state,
-        cards: { ...state.cards }
-    };
+
+    // Create shallow copy of cards map
+    const newCards = { ...state.cards };
+    let changed = false;
 
     // 501.1 Untap Step
     // Untap all cards in Battle Zone and Mana Zone controlled by the active player.
-    Object.values(newState.cards).forEach(card => {
+    Object.keys(newCards).forEach(cardId => {
+        const card = newCards[cardId];
         if (card.controllerId === activePlayerId &&
             (card.zone === ZoneId.BATTLE_ZONE || card.zone === ZoneId.MANA)) {
-            card.tapped = false;
+
+            // Only update if actually changed to preserve references where possible (optional optimization, but good practice)
+            if (card.tapped || card.hasSummoningSickness) {
+                newCards[cardId] = {
+                    ...card,
+                    tapped: false,
+                    // Rule 301.5: Summoning sickness ends at start of turn
+                    hasSummoningSickness: false
+                };
+                changed = true;
+            }
         }
     });
 
     // 501.2 Start of Turn Triggers (Future implementation)
     // resolveStartOfTurnTriggers(newState);
 
-    return newState;
+    if (!changed) return state;
+
+    return {
+        ...state,
+        cards: newCards
+    };
 };
 
 /**

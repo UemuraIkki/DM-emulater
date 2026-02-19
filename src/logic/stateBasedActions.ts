@@ -1,16 +1,18 @@
 
 import { ZoneId } from '../types/gameState';
-import type { GameState, CardState } from '../types/gameState';
-import { moveCard } from './zoneMovement';
-
-import { getPower } from './cardStatus';
+import type { GameState } from '../types/gameState';
 
 /**
- * Rule 703. State-Based Actions
- * Checks game state for specific conditions and applies necessary changes.
+ * Checks for state-based actions (SBA) and applies them.
+ * 703.4.
  * Repeats until no SBA occur (Rule 703.2).
  */
 export const checkStateBasedActions = (state: GameState): GameState => {
+    // CRITICAL: Disable all SBA for debugging / sandbox mode
+    // This prevents auto-destruction of creatures with 0 power or other rule-based cleanups
+    return state;
+
+    /*
     let newState = { ...state, cards: { ...state.cards } }; // Clone top level
     let anyChange = false;
     let iterations = 0;
@@ -87,4 +89,5 @@ export const checkStateBasedActions = (state: GameState): GameState => {
     } while (anyChange && iterations < MAX_ITERATIONS);
 
     return newState;
+    */
 };

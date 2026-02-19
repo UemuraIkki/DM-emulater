@@ -1,4 +1,4 @@
-import type { GameState } from '../types/gameState';
+import type { GameState, CardState } from '../types/gameState';
 
 import { startTurn, drawStep, endTurn } from './turnManager';
 import { Phase, AttackStep } from '../types/gamePhase';
@@ -78,9 +78,9 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
         case 'MANUAL_MOVE_CARD': {
             // Robust Manual Move
             const { cardId, toZone, options } = action.payload;
-            const card = state.cards[cardId];
+            const originalCard = state.cards[cardId];
 
-            if (!card) {
+            if (!originalCard) {
                 console.error(`[Manual] Card not found: ${cardId}`);
                 return state;
             }
@@ -92,45 +92,55 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
             }
 
             // 1. Log
-            const cardName = state.cardsMap[card.masterId]?.name || 'Unknown Card';
+            const cardName = state.cardsMap[originalCard.masterId]?.name || 'Unknown Card';
             const logMsg = options?.executionMessage
                 ? `[Manual] ${options.executionMessage} ${cardName}`
                 : `[Manual] Moved ${cardName} to ${toZone}`;
 
-            let logs = [...(state.logs || []), logMsg];
+            const newLogs = [...(state.logs || []), logMsg];
 
-            // 2. Move (Create new cards map)
-            // Use moveCard logic but inline/ensure it's explicit for manual override
-            // We want to FORCE move, ignoring restrictions like "Can't move from Abyss" if valid in sandbox?
-            // But let's stick to moveCard for consistency, or standard manual override.
-            // "Manual" implies god-mode, so let's bypass moveCard checks if needed, but moveCard is mostly safe.
-            // Let's use moveCard but ensure we get a new state object.
+            // 2. FORCE MOVE (Bypass all logic checks)
+            // We do NOT use moveCard helper here because it might contain valid-move logic.
+            // We manually update the card's zone in the state.
 
-            let movedState = moveCard(state, cardId, toZone);
+            const newCardState: CardState = {
+                ...originalCard,
+                zone: toZone, // Force Zone Change
+                // Apply options if provided
+                tapped: options?.tapped !== undefined ? options.tapped : originalCard.tapped,
+                faceDown: options?.faceDown !== undefined ? options.faceDown : originalCard.faceDown,
 
-            // 3. Apply Options (Tap, FaceDown) reliably on the NEW card instance
-            // We must access movedState.cards to get the new instance
-            const movedCard = movedState.cards[cardId];
-            if (movedCard) {
-                // Apply manual overrides
-                const updatedCard = {
-                    ...movedCard,
-                    tapped: options?.tapped !== undefined ? options.tapped : movedCard.tapped,
-                    faceDown: options?.faceDown !== undefined ? options.faceDown : movedCard.faceDown
-                };
-                movedState = {
-                    ...movedState,
-                    cards: {
-                        ...movedState.cards,
-                        [cardId]: updatedCard
-                    }
-                };
-            }
+                // Reset pending states as this is a "Teleport"
+                attachedTo: undefined,
+                attachedToId: undefined,
 
-            // Return final state with logs
+                // If moving to Battle Zone, usually summoning sickness applies unless defined otherwise
+                // But in Manual Mode, user might expect ready-to-use. 
+                // Let's set SS to TRUE by default for BZ, but user can untap/remove SS via future buttons if needed.
+                // actually, for "Game Debug", let's make it FALSE so they can attack immediately? 
+                // User said "Strict Manual", usually implies "Do exactly what I say".
+                // If I just move it, it should probably keep SS state or reset?
+                // Standard convention: New object in BZ = SS.
+                hasSummoningSickness: toZone === ZoneId.BATTLE_ZONE && originalCard.zone !== ZoneId.BATTLE_ZONE
+                    ? true
+                    : originalCard.hasSummoningSickness
+            };
+
+            // Remove from old zone arrays? 
+            // The state relies on `cards` map + `getCardsInZone` (filter). 
+            // There are no separate array structures for zones in `turnState` or `players` except implicitly.
+            // Wait, looking at GameState, do we have zone arrays?
+            // "cards: Record<string, CardState>"
+            // So updating the card object IS moving it.
+
+            // 3. Create New State directly
             return {
-                ...movedState,
-                logs
+                ...state,
+                cards: {
+                    ...state.cards,
+                    [cardId]: newCardState
+                },
+                logs: newLogs
             };
         }
 
@@ -146,6 +156,11 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
         }
 
         case 'NEXT_PHASE': {
+            // Debug Logs for Board Wipe Investigation
+            const getBZ = (s: GameState) => Object.values(s.cards).filter(c => c.zone === ZoneId.BATTLE_ZONE);
+            console.log("BEFORE NEXT_PHASE - BattleZone Count:", getBZ(state).length);
+            // console.log("BEFORE NEXT_PHASE - BattleZone IDs:", getBZ(state).map(c => c.id));
+
             // ... existing next phase logic ... 
             // (Keeping existing logic but ensuring it returns a new object strictly)
             const tempState: GameState = {
@@ -153,9 +168,7 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
                 turnState: { ...state.turnState },
                 cards: { ...state.cards }
             };
-            // ... (rest of next phase logic is complex, assuming previous implementation was mostly correct but let's wrap it safe)
-            // For brevity in this tool call, I will copy the previous NEXT_PHASE logic but formatted.
-            // Actually, I should use the existing logic to avoid breaking it, just ensuring the Switch block structure.
+
             const currentPhase = tempState.turnState.phase;
             let phaseResultState = tempState;
 
@@ -181,15 +194,28 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
                     const playerIds = Object.keys(phaseResultState.players);
                     const currentIndex = playerIds.indexOf(phaseResultState.turnState.activePlayerId);
                     const nextIndex = (currentIndex + 1) % playerIds.length;
-                    phaseResultState.turnState.activePlayerId = playerIds[nextIndex];
-                    phaseResultState.turnState.phase = Phase.START_OF_TURN;
-                    phaseResultState.turnState.turnNumber += 1;
-                    phaseResultState.turnState.isFirstTurn = false;
-                    phaseResultState.turnState.attackStep = AttackStep.NONE;
+
+                    // Create new turn state explicitly
+                    phaseResultState = {
+                        ...phaseResultState,
+                        turnState: {
+                            ...phaseResultState.turnState,
+                            activePlayerId: playerIds[nextIndex],
+                            phase: Phase.START_OF_TURN,
+                            turnNumber: phaseResultState.turnState.turnNumber + 1,
+                            isFirstTurn: false,
+                            attackStep: AttackStep.NONE
+                        }
+                    };
+
+                    // Execute Start Turn (Untap, etc.) - This is where cards were being wiped
                     phaseResultState = startTurn(phaseResultState);
                     break;
             }
             newState = checkStateBasedActions(phaseResultState);
+
+            console.log("AFTER NEXT_PHASE - BattleZone Count:", getBZ(newState).length);
+            // console.log("AFTER NEXT_PHASE - BattleZone IDs:", getBZ(newState).map(c => c.id));
             break;
         }
 
