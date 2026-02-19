@@ -23,7 +23,7 @@ export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, card
     );
 
     // === DEBUG: Force Console Logging of Raw Data ===
-    console.log("=== INSPECTING CARD DATA ===", card);
+    console.log("=== INSPECTING CARD DATA ===", card, "InstanceID:", cardId);
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-[1px]" onClick={onClose}>
@@ -101,17 +101,37 @@ export const ManualActionModal: React.FC<ManualActionModalProps> = ({ card, card
                         {/* Battle Zone Operations */}
                         <div className="space-y-1">
                             <div className="text-[10px] text-indigo-400 uppercase font-bold tracking-wider">Battle Zone</div>
-                            <ActionButton
-                                label="Summon / Cast (Execute)"
-                                zone={ZoneId.BATTLE_ZONE}
-                                options={{ executionMessage: 'Summoned/Cast' }}
-                                className="bg-green-700 text-white"
-                            />
+
+                            {/* Multi-Sided Play Options */}
+                            {card.sides && card.sides.length > 1 ? (
+                                <div className="space-y-2">
+                                    {card.sides.map((side, idx) => (
+                                        <div key={idx} className="border border-slate-600 rounded p-1 bg-black/20">
+                                            <div className="text-[10px] text-slate-400 mb-1 font-bold">{side.name} ({side.type})</div>
+                                            <ActionButton
+                                                label={`Play as ${side.type}`}
+                                                zone={ZoneId.BATTLE_ZONE}
+                                                options={{ activeSide: idx, executionMessage: `Played as ${side.name}` }}
+                                                className="bg-green-700 hover:bg-green-600 text-white w-full py-1 text-xs"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                /* Single Side Standard */
+                                <ActionButton
+                                    label="Summon / Cast (Execute)"
+                                    zone={ZoneId.BATTLE_ZONE}
+                                    options={{ executionMessage: 'Summoned/Cast' }}
+                                    className="bg-green-700 text-white"
+                                />
+                            )}
+
                             <ActionButton
                                 label="Put (No Effect)"
                                 zone={ZoneId.BATTLE_ZONE}
                                 options={{ executionMessage: 'Put into Battle Zone' }}
-                                className="bg-slate-700 text-slate-300"
+                                className="bg-slate-700 text-slate-300 mt-1"
                             />
                         </div>
 

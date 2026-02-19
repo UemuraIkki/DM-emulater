@@ -88,6 +88,11 @@ export interface CardState {
 
     // Power Modifier (for Manual Mode)
     powerModifier: number;
+
+    // Multi-Sided State (Rule 801.1, 805)
+    // 0 = Side A / Main / Creature side
+    // 1 = Side B / Spell side / Psychic side
+    activeSide: number;
 }
 
 /**

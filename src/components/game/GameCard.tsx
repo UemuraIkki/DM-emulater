@@ -47,9 +47,15 @@ export const GameCard: React.FC<GameCardProps> = ({
 
     if (!cardData) return <div className="w-12 h-16 md:w-16 md:h-24 bg-gray-200 rounded">?</div>;
 
-    // Orientation Logic: Certain types are horizontal by default
-    // We check mainPart.type for simplicity if available, or searchIndex
-    const rawType = cardData.mainPart.type.toUpperCase();
+    // Determine Active Side Data
+    const activeSideIndex = cardState.activeSide || 0;
+    const activeSideData = cardData.sides && cardData.sides[activeSideIndex]
+        ? cardData.sides[activeSideIndex]
+        : cardData.mainPart; // Fallback
+
+    // Orientation Logic
+    // Use side type or main type logic
+    const rawType = activeSideData.type.toUpperCase();
     const isHorizontalType =
         rawType === 'FIELD' ||
         rawType === 'FORTRESS' ||
@@ -78,7 +84,7 @@ export const GameCard: React.FC<GameCardProps> = ({
                 ${isSelected ? 'ring-2 ring-yellow-400 scale-105 z-10' : 'hover:scale-105'}
                 ${sicknessClass}
             `}
-            title={cardData.name}
+            title={activeSideData.name}
             onClick={onClick}
         >
             {/* Sickness Icon */}
@@ -87,19 +93,25 @@ export const GameCard: React.FC<GameCardProps> = ({
             )}
 
             <div className={`font-bold leading-tight text-center line-clamp-2 ${getCivColorClass(cardData)}`}>
-                {cardData.name}
+                {activeSideData.name}
             </div>
             <div className="mt-auto flex justify-between items-end w-full px-0.5">
-                <div className="text-[8px] font-bold text-gray-400">{cardData.searchIndex.costs?.[0]}</div>
-                {(cardData.searchIndex.power?.[0] || (cardState.powerModifier && cardState.powerModifier !== 0)) && (
+                <div className="text-[8px] font-bold text-gray-400">{activeSideData.cost}</div>
+                {(activeSideData.power || (cardState.powerModifier && cardState.powerModifier !== 0)) && (
                     <div className={`text-[8px] font-bold ${(cardState.powerModifier || 0) > 0 ? 'text-red-500' :
                         (cardState.powerModifier || 0) < 0 ? 'text-blue-500' : 'text-slate-500'
                         }`}>
-                        {((cardData.searchIndex.power?.[0] || 0) + (cardState.powerModifier || 0))}
+                        {((typeof activeSideData.power === 'number' ? activeSideData.power : parseInt(activeSideData.power as any) || 0) + (cardState.powerModifier || 0))}
                     </div>
                 )}
             </div>
-            {cardData.subPart && <div className="mt-1 text-gray-500 text-[8px] border-t w-full text-center pt-0.5">{cardData.subPart.name}</div>}
+            {/* SubPart display only if side 0 and exists? Or never show subpart name if we show active side? */}
+            {/* If we are showing active side, we probably don't need subpart line unless it's strictly Twinpact visualization style preference. */}
+            {/* User asked to "Reflect Active Side". So focusing on active side name/power/cost is correct. */}
+            {/* If activeSide is 0 (Creature) and it is Twinpact, original code showed subpart name. */}
+            {/* But now cardData.subPart might overlap with activeSide logic. */}
+            {/* Let's keep it simple: Show active side info. */}
+            {activeSideIndex === 0 && cardData.subPart && <div className="mt-1 text-gray-500 text-[8px] border-t w-full text-center pt-0.5">{cardData.subPart.name}</div>}
         </div>
     );
 };

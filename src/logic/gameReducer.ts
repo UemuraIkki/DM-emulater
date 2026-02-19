@@ -22,7 +22,7 @@ export type GameAction =
     | { type: 'ATTACK'; payload: { attackerId: string; targetId: string } }
     | { type: 'UNDO' }
     | { type: 'SEND_MESSAGE'; payload: { senderId: string; text: string } }
-    | { type: 'MANUAL_MOVE_CARD'; payload: { cardId: string; toZone: ZoneId; options?: { tapped?: boolean; faceDown?: boolean; executionMessage?: string } } }
+    | { type: 'MANUAL_MOVE_CARD'; payload: { cardId: string; toZone: ZoneId; options?: { tapped?: boolean; faceDown?: boolean; executionMessage?: string; activeSide?: number } } }
     | { type: 'TOGGLE_TAP'; payload: { cardId: string } }
     | { type: 'MODIFY_POWER'; payload: { cardId: string; amount: number } }
     | { type: 'RESET_CARD'; payload: { cardId: string } }
@@ -93,9 +93,14 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
 
             // 1. Log
             const cardName = state.cardsMap[originalCard.masterId]?.name || 'Unknown Card';
+            // Enhance Log with Side info if applicable
+            const sideName = options?.activeSide !== undefined && state.cardsMap[originalCard.masterId]?.sides?.[options.activeSide]
+                ? ` as ${state.cardsMap[originalCard.masterId].sides[options.activeSide].name}`
+                : '';
+
             const logMsg = options?.executionMessage
-                ? `[Manual] ${options.executionMessage} ${cardName}`
-                : `[Manual] Moved ${cardName} to ${toZone}`;
+                ? `[Manual] ${options.executionMessage} ${cardName}${sideName}`
+                : `[Manual] Moved ${cardName}${sideName} to ${toZone}`;
 
             const newLogs = [...(state.logs || []), logMsg];
 
@@ -109,6 +114,9 @@ export const gameReducer = (state: GameState | null, action: GameAction): GameSt
                 // Apply options if provided
                 tapped: options?.tapped !== undefined ? options.tapped : originalCard.tapped,
                 faceDown: options?.faceDown !== undefined ? options.faceDown : originalCard.faceDown,
+                activeSide: options?.activeSide !== undefined ? options.activeSide : originalCard.activeSide, // Strict update if provided
+
+                // Reset pending states as this is a "Teleport"
 
                 // Reset pending states as this is a "Teleport"
                 attachedTo: undefined,

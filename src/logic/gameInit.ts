@@ -64,7 +64,10 @@ const createCardState = (
         linkedCardIds: [],
 
         // Power Modifier
-        powerModifier: 0
+        powerModifier: 0,
+
+        // Defaults to Main Side
+        activeSide: 0
     };
 };
 
